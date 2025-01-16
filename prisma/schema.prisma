@@ -1,14 +1,157 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "mysql" // Adjust to your database provider
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  password String
+  role     String
+}
+
+model Product {
+  id       Int      @id @default(autoincrement())
+  name     String
+  type     Type
+  price    Float
+  Processor Processor?
+  Memory    Memory?
+  HardDrive HardDrive?
+  VideoCard VideoCard?
+  Motherboard Motherboard?
+  CPUCooler CPUCooler?
+  PowerSupply PowerSupply?
+  Powerhouse Powerhouse?
+}
+
+model Processor {
+  id                     Int     @id @default(autoincrement())
+  coreNumber             Int
+  baseFrequency          Float
+  turboBoostFrequency    Float
+  cache                  Float
+  architecture           String
+  processorSeller        String
+  processorModel         String
+  integratedGraphicModel String
+  processorTechnology    String
+  productId              Int     @unique
+  Product                Product @relation(fields: [productId], references: [id])
+}
+
+model Memory {
+  id                     Int     @id @default(autoincrement())
+  memoryCapacity         Float
+  memoryType             String
+  installedMemory        Float
+  frequency              Float
+  supportedMemoryCapacity Float
+  productId              Int     @unique
+  Product                Product @relation(fields: [productId], references: [id])
+}
+
+model HardDrive {
+  id                Int     @id @default(autoincrement())
+  capacity          Float
+  storageType       String
+  connectionInterface String
+  readingSpeed      Float
+  writingSpeed      Float
+  nandFlashType     String
+  pciGeneration     Int
+  productId         Int     @unique
+  Product           Product @relation(fields: [productId], references: [id])
+}
+
+model VideoCard {
+  id                 Int     @id @default(autoincrement())
+  videoChipset       String
+  producer           String
+  cpuSocket          String
+  coolingType        String
+  graphicChipSpeed   Float
+  graphicMemorySpeed Float
+  memoryCapacity     Float
+  bandwidth          Float
+  suggestedPower     Float
+  displayPort        Int
+  size               String
+  productId          Int     @unique
+  Product            Product @relation(fields: [productId], references: [id])
+}
+
+model Motherboard {
+  id              Int     @id @default(autoincrement())
+  cpuSocket       String
+  chipset         String
+  memoryType      String
+  processorSeller String
+  graphicCard     String
+  hdmi            Boolean
+  sataConnectors  Int
+  pciConnectors   Int
+  usbPorts        Int
+  memorySockets   Int
+  integratedSound Boolean
+  bluetooth       Boolean
+  wireless        Boolean
+  sizeStandard    String
+  productId       Int     @unique
+  Product         Product @relation(fields: [productId], references: [id])
+}
+
+model CPUCooler {
+  id          Int     @id @default(autoincrement())
+  fanSpeed    Float
+  type        String
+  airflow     Float
+  frequency   Float
+  productId   Int     @unique
+  Product     Product @relation(fields: [productId], references: [id])
+}
+
+model PowerSupply {
+  id               Int     @id @default(autoincrement())
+  performance      Float
+  fourPinConnector Boolean
+  sixPinVGA        Boolean
+  size             String
+  productId        Int     @unique
+  Product          Product @relation(fields: [productId], references: [id])
+}
+
+model Powerhouse {
+  id             Int     @id @default(autoincrement())
+  motherboardType String
+  fans           Int
+  size           String
+  productId      Int     @unique
+  Product        Product @relation(fields: [productId], references: [id])
+}
+
+model Size {
+  id     Int     @id @default(autoincrement())
+  width  Float
+  length Float
+  height Float
+  productId Int  @unique
+}
+
+
+enum Type{
+  PROCESSOR
+  MEMORY
+  HARDDRIVE
+  VIDEOCARD
+  MOTHERBOARD
+  CPUCOOLER
+  POWERSUPPLY
+  POWERHOUSE
 }
