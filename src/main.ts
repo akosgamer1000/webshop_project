@@ -23,7 +23,7 @@ async function bootstrap() {
 
   
   const docConfig = new DocumentBuilder()
-    .setTitle('Login App')
+    .setTitle('WebShop App')
     .addBearerAuth()
     .build()
     SwaggerModule.setup(

@@ -41,7 +41,8 @@ export class CreateUserDto {
         message: "role field has to be one of the following: user, admin!"
     })
     @ApiProperty({
-        description: 'Role of the user. Can be user/admin'
+        description: 'Role of the user. Can be user/admin',
+        example: 'user'
     })
     role : string;
 
