@@ -44,7 +44,7 @@ export class UserService {
 
   findOne(id: number) {
     return this.db.user.findUnique({
-      where: {id}
+      where: {id : id}
     });
   }
 
