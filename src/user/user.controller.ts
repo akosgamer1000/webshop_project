@@ -3,14 +3,16 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-import { Roles } from 'src/auth/role.decorator';
+import { Roles } from 'src/auth/decorators/role.decorator';
 import { Role } from 'src/auth/role.enum';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('user')
 @ApiBearerAuth()
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  
 
   /**
    * Creates a new user
@@ -18,7 +20,7 @@ export class UserController {
    * @param createUserDto The data to post
    * @returns JSON response
    */
-
+  @Public()
   @Post()
   @ApiResponse({ status: 200, description: 'The created user'})
   @ApiBadRequestResponse({ description: 'The supplied data was invalid'})
@@ -33,7 +35,7 @@ export class UserController {
    */
 
   @Get()
-  @UseGuards(AuthGuard('bearer'))
+  @Roles(Role.ADMIN)
   @ApiResponse({ status: 200, description: 'The data of the users'})
   findAll(@Request() req) {
     const user = req.user;
@@ -49,7 +51,6 @@ export class UserController {
    */
 
   @Get(':id(\\d+)+')
-  @UseGuards(AuthGuard('bearer'))
   @Roles(Role.ADMIN)
   @ApiParam({
     name: 'id',
@@ -61,31 +62,7 @@ export class UserController {
   findOne(@Param('id') id: string) {
     console.log(id)
     return this.userService.findOne(+id);        
-  }
-
-  /**
-   * Returns a user by token
-   * 
-   * @param token The unbique token of the user
-   * @returns JSON response
-   */
-
-  @Get(':token')
-  @UseGuards(AuthGuard('bearer'))
-  @ApiParam({
-    name: 'token',
-    type: 'string',
-    description: 'The unique token of the user'
-  })
-  @ApiResponse({status: 200, description: 'The user with the given token'})
-  @ApiBadRequestResponse({description: 'The supplied data is invalid'})
-  @UseGuards(AuthGuard('bearer'))
-  findByToken( @Param('token') token: string) {
-    console.log(token)
-    return this.userService.getUserByToken(token);
-  }
-
-  
+  }  
 
   /**
    * Updates a user by ID
@@ -94,9 +71,8 @@ export class UserController {
    * @param updateUserDto The data to update
    * @returns JSON response
    */
-
+@Roles(Role.ADMIN)
   @Patch(':id(\\d+)+')
-  @UseGuards(AuthGuard('bearer'))
   @ApiParam({
     name: 'id',
     type: 'number',
@@ -114,9 +90,8 @@ export class UserController {
    * @param id The unique ID of the user
    * @returns JSON response
    */
-
+  @Roles(Role.ADMIN)
   @Delete(':id(\\d+)+')
-  @UseGuards(AuthGuard('bearer'))
   @ApiParam({
     name: 'id',
     type: 'number',

@@ -28,6 +28,7 @@ async function main() {
       name: "Intel Core i9",
       type: "PROCESSOR",
       price: 499.99,
+      couantity: 10,
       Processor: {
         create: {
           coreNumber: 8,
@@ -50,6 +51,7 @@ async function main() {
       name: "Corsair Vengeance",
       type: "MEMORY",
       price: 129.99,
+      couantity: 10,
       Memory: {
         create: {
           memoryCapacity: 16,
@@ -68,6 +70,7 @@ async function main() {
       name: "Samsung 970 EVO Plus",
       type: "HARDDRIVE",
       price: 199.99,
+      couantity: 10,
       HardDrive: {
         create: {
           capacity: 1,
@@ -88,6 +91,7 @@ async function main() {
       name: "NVIDIA GeForce RTX 3080",
       type: "VIDEOCARD",
       price: 699.99,
+      couantity: 10,
       VideoCard: {
         create: {
           videoChipset: "GA102",
@@ -112,6 +116,7 @@ async function main() {
       name: "ASUS ROG Strix Z590-E",
       type: "MOTHERBOARD",
       price: 299.99,
+      couantity: 10,
       Motherboard: {
         create: {
           cpuSocket: "LGA1200",
@@ -139,6 +144,7 @@ async function main() {
       name: "Noctua NH-D15",
       type: "CPUCOOLER",
       price: 89.99,
+      couantity: 10,
       CPUCooler: {
         create: {
           fanSpeed: 1500,
@@ -156,6 +162,7 @@ async function main() {
       name: "Corsair RM750x",
       type: "POWERSUPPLY",
       price: 124.99,
+      couantity: 10,
       PowerSupply: {
         create: {
           performance: 750,
@@ -173,6 +180,7 @@ async function main() {
       name: "NZXT H510",
       type: "POWERHOUSE",
       price: 79.99,
+      couantity: 10,
       Powerhouse: {
         create: {
           motherboardType: "ATX",
