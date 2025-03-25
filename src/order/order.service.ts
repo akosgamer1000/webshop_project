@@ -7,9 +7,9 @@ import { create } from 'domain';
 
 @Injectable()
 export class OrderService {
-  
-  constructor(private readonly db: PrismaService) {}
-  
+
+  constructor(private readonly db: PrismaService) { }
+
 
   async create(createOrderDto: CreateOrderDto) {
     const productPrices = createOrderDto.products.map(async (product) => {
@@ -29,27 +29,50 @@ export class OrderService {
       return acc + product
     }, 0)
 
-
-    const order = this.db.order.create({
-      data: {
-        user: {
-          connect: {
-            id: createOrderDto.userId,
+    if (await this.db.user.findUnique({
+      where: { email: createOrderDto.email }
+    })) {
+      return this.db.order.create({
+        data: {
+          user: {
+            connect: {
+              email: createOrderDto.email,
+            },
           },
-        },
-        products: {
-          create: createOrderDto.products.map((product) => {
-            return {
-              productId: product.productId,
-              quantity: product.quantity,
-            };
-          }),
-        },
-        totalPrice : totalPrice
+          email : createOrderDto.email,
+          address: createOrderDto.address,
+          status: "Pending",
+          products: {
+            create: createOrderDto.products.map((product) => {
+              return {
+                productId: product.productId,
+                quantity: product.quantity,
+              };
+            }),
+          },
+          totalPrice: totalPrice
 
-      },
+        },
       })
-      return order
+    } else {
+      return this.db.order.create({
+        data: {
+          email : createOrderDto.email,
+          address: createOrderDto.address,
+          status: "Pending",
+          products: {
+            create: createOrderDto.products.map((product) => {
+              return {
+                productId: product.productId,
+                quantity: product.quantity,
+              };
+            }),
+          },
+          totalPrice: totalPrice
+
+        },
+      })
+    }
   }
 
   findAll() {
@@ -69,41 +92,45 @@ export class OrderService {
 
   updateItemInOrder(id: number, updateOrderDto: UpdateOrderDto) {
     updateOrderDto.products.map(async (product) => {
-      if (await this.db.orderItem.count({where: {
-        productId: product.productId,
-        orderId: id
-      }}) === 0) {
+      if (await this.db.orderItem.count({
+        where: {
+          productId: product.productId,
+          orderId: id
+        }
+      }) === 0) {
         console.log("Adding new product to order");
         return await this.db.order.update({
-          where: {id : id},
-          data : {
-            products : {
+          where: { id: id },
+          data: {
+            products: {
               create: {
-                productId : product.productId,
+                productId: product.productId,
                 quantity: product.quantity
               }
             }
           },
 
           include: {
-            products : true
+            products: true
           }
         })
       }
       else {
         console.log("updating product")
-        const item = await this.db.orderItem.findFirst({where: {
-          productId: product.productId,
-          orderId: id
-        }});
+        const item = await this.db.orderItem.findFirst({
+          where: {
+            productId: product.productId,
+            orderId: id
+          }
+        });
         return await this.db.order.update({
-          where: {id : id},
-          data : {
+          where: { id: id },
+          data: {
             products: {
-              update : {
-                where : {id : item.id},
-                data : {
-                  quantity : product.quantity
+              update: {
+                where: { id: item.id },
+                data: {
+                  quantity: product.quantity
                 }
               }
             }
@@ -115,19 +142,19 @@ export class OrderService {
   async removeItemFromOrder(orderId: number, productId: number) {
     const orderItem = await this.db.orderItem.findFirst({
       where: {
-        orderId : orderId,
-        productId : productId
+        orderId: orderId,
+        productId: productId
       }
     })
     console.log(orderItem)
     return this.db.order.update({
-      where: {id : orderId},
+      where: { id: orderId },
       data: {
-       products : {
-        delete : {
-          id : orderItem.id
+        products: {
+          delete: {
+            id: orderItem.id
+          }
         }
-       } 
       },
       include: {
         products: true
@@ -137,8 +164,8 @@ export class OrderService {
 
   remove(id: number) {
     return this.db.order.delete({
-      where: {id},
-      
+      where: { id },
+
     })
   }
 }

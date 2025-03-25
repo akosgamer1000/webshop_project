@@ -1,16 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Public } from 'src/auth/decorators/public.decorator';
+import { UserService } from 'src/user/user.service';
 
 @Controller('order')
 @ApiBearerAuth()
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(
+    private readonly orderService: OrderService,
+    private readonly userService: UserService
+  ) { }
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
+  async create(@Request() req, @Body() createOrderDto: CreateOrderDto) {
+
+    const user = await this.userService.findOne(req.user.id)
+    createOrderDto.email = user.email;
+    createOrderDto.address = user.address;
+    console.log(req.user)
+
     return this.orderService.create(createOrderDto);
   }
 
@@ -30,7 +41,7 @@ export class OrderController {
   }
 
   @Patch(':orderId(\\d+)+/removeFromOrder/:productId(\\d+)+')
-  removeItemFromOrder(@Param('orderId') id : string, @Param('productId') productId : string  ) {
+  removeItemFromOrder(@Param('orderId') id: string, @Param('productId') productId: string) {
     console.log("asd")
     return this.orderService.removeItemFromOrder(+id, +productId)
   }

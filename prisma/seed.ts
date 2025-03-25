@@ -9,6 +9,7 @@ async function main() {
       name: "John Doe",
       email: "john.doe@example.com",
       password: "password123",
+      address: "sesam street 1",
       role: "ADMIN",
     },
   });
@@ -18,6 +19,7 @@ async function main() {
       name: "Jane Smith",
       email: "jane.smith@example.com",
       password: "securepassword",
+      address: "sesam street 2",
       role: "USER",
     },
   });

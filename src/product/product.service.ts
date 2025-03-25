@@ -7,6 +7,7 @@ import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductService {
+  
 
     constructor(private readonly db: PrismaService) {}
   
@@ -58,6 +59,12 @@ export class ProductService {
         Object.entries(product).filter(([key, value]) => value !== null)
       );
     });
+  }
+
+  findTypes() {
+    return this.db.product.groupBy({
+      by: 'type'
+    })
   }
 
   async findOne(id: number) {

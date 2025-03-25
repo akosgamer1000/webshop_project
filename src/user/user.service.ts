@@ -26,14 +26,22 @@ export class UserService {
   }
 
 
-  findAll() {
-    return this.db.user.findMany();
+  async findAll() {
+    const users = await this.db.user.findMany();
+    users.forEach(user => {
+      delete user.password;
+    });
+
+    return users;
+
   }
 
-  findOne(id: number) {
-    return this.db.user.findUnique({
+  async findOne(id: number) {
+    const user = await this.db.user.findUnique({
       where: {id : id}
     });
+    delete user.password
+    return user
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

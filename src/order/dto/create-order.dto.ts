@@ -1,18 +1,26 @@
-import { IsDefined, IsIn, IsNumber } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsDefined, IsEmail, IsIn, IsNumber, IsString } from "class-validator";
 
 export class CreateOrderDto {
+
+    @IsString()
+    @IsEmail()
+    @ApiProperty({example : "barmiAron@example.com"})
+    email : string;
+
+    @IsString()
+    address : string;
+
     @IsDefined()
-    @IsNumber()
-    userId : number;
-    @IsDefined()
-    products : CreateOrderItemDto[];
+    products: CreateOrderItemDto[];
 }
 
 class CreateOrderItemDto {
     @IsDefined()
     @IsNumber()
-    productId : number;
+    productId: number;
     @IsDefined()
     @IsNumber()
-    quantity : number;
+    quantity: number;
+    
 }

@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,62 +12,56 @@ model User {
   name     String
   email    String @unique
   password String
+  address  String
   role     String
-
-  cart CartItem[]
 
   orders Order[]
 }
 
-model CartItem {
-  id Int @id @default(autoincrement())
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int
-  product Product @relation(fields: [productid], references: [id])
-  productid Int 
-  quantity Int @default(1)
+model Order {
+  id     Int   @id @default(autoincrement())
+  user   User? @relation(fields: [email], references: [email])
+  email      String
+  address    String
+  status     Status
+  products   OrderItem[]
+  totalPrice Float
+  createdAt  DateTime    @default(now())
 }
 
-model Order {
-  id Int @id @default(autoincrement())
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  products OrderItem[]
-  totalPrice Float
-  createdAt DateTime @default(now())
+enum Status {
+  Pending
+  InProgress
+  Delivered
 }
 
 model OrderItem {
-  id Int @id @default(autoincrement())
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId Int
-  product Product @relation(fields: [productId], references: [id])
+  id        Int     @id @default(autoincrement())
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   Int
+  product   Product @relation(fields: [productId], references: [id])
   productId Int
-  quantity Int @default(1)
+  quantity  Int     @default(1)
 }
-
 
 model Product {
-  id       Int      @id @default(autoincrement())
-  name     String
-  type     Type
-  price    Float
+  id        Int    @id @default(autoincrement())
+  name      String
+  type      Type
+  price     Float
   couantity Int
 
-  Processor Processor?
-  Memory    Memory?
-  HardDrive HardDrive?
-  VideoCard VideoCard?
+  Processor   Processor?
+  Memory      Memory?
+  HardDrive   HardDrive?
+  VideoCard   VideoCard?
   Motherboard Motherboard?
-  CPUCooler CPUCooler?
+  CPUCooler   CPUCooler?
   PowerSupply PowerSupply?
-  Powerhouse Powerhouse?
+  Powerhouse  Powerhouse?
 
-  CartItem CartItem[]
   OrderItem OrderItem[]
 }
-
-
 
 model Processor {
   id                     Int     @id @default(autoincrement())
@@ -86,27 +79,27 @@ model Processor {
 }
 
 model Memory {
-  id                     Int     @id @default(autoincrement())
-  memoryCapacity         Float
-  memoryType             String
-  installedMemory        Float
-  frequency              Float
+  id                      Int     @id @default(autoincrement())
+  memoryCapacity          Float
+  memoryType              String
+  installedMemory         Float
+  frequency               Float
   supportedMemoryCapacity Float
-  productId              Int     @unique
-  Product                Product @relation(fields: [productId], references: [id])
+  productId               Int     @unique
+  Product                 Product @relation(fields: [productId], references: [id])
 }
 
 model HardDrive {
-  id                Int     @id @default(autoincrement())
-  capacity          Float
-  storageType       String
+  id                  Int     @id @default(autoincrement())
+  capacity            Float
+  storageType         String
   connectionInterface String
-  readingSpeed      Float
-  writingSpeed      Float
-  nandFlashType     String
-  pciGeneration     Int
-  productId         Int     @unique
-  Product           Product @relation(fields: [productId], references: [id])
+  readingSpeed        Float
+  writingSpeed        Float
+  nandFlashType       String
+  pciGeneration       Int
+  productId           Int     @unique
+  Product             Product @relation(fields: [productId], references: [id])
 }
 
 model VideoCard {
@@ -147,13 +140,13 @@ model Motherboard {
 }
 
 model CPUCooler {
-  id          Int     @id @default(autoincrement())
-  fanSpeed    Float
-  type        String
-  airflow     Float
-  frequency   Float
-  productId   Int     @unique
-  Product     Product @relation(fields: [productId], references: [id])
+  id        Int     @id @default(autoincrement())
+  fanSpeed  Float
+  type      String
+  airflow   Float
+  frequency Float
+  productId Int     @unique
+  Product   Product @relation(fields: [productId], references: [id])
 }
 
 model PowerSupply {
@@ -167,24 +160,23 @@ model PowerSupply {
 }
 
 model Powerhouse {
-  id             Int     @id @default(autoincrement())
+  id              Int     @id @default(autoincrement())
   motherboardType String
-  fans           Int
-  size           String
-  productId      Int     @unique
-  Product        Product @relation(fields: [productId], references: [id])
+  fans            Int
+  size            String
+  productId       Int     @unique
+  Product         Product @relation(fields: [productId], references: [id])
 }
 
 model Size {
-  id     Int     @id @default(autoincrement())
-  width  Float
-  length Float
-  height Float
-  productId Int  @unique
+  id        Int   @id @default(autoincrement())
+  width     Float
+  length    Float
+  height    Float
+  productId Int   @unique
 }
 
-
-enum Type{
+enum Type {
   PROCESSOR
   MEMORY
   HARDDRIVE

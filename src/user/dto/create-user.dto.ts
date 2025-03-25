@@ -34,6 +34,16 @@ export class CreateUserDto {
     password : string;
 
     @IsDefined({
+        message: "address field must be filled!"
+    })
+    @IsString()
+    @ApiProperty({
+        description: 'Address of the user',
+        example: 'sesame street 0'
+    })
+    address : string;
+
+    @IsDefined({
         message: "role field must be filled!"
     })
     @IsString()

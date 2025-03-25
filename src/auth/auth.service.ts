@@ -3,28 +3,53 @@ import { LoginDto } from './login.dto';
 import { PrismaService } from 'src/prisma.service';
 import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
+import { ChangePasswordDto } from './dto/changePassword.dto';
 
 @Injectable()
 export class AuthService {
+
     constructor(
         private readonly db: PrismaService,
         private readonly jwtService: JwtService
-    ) {}
-    
+    ) { }
+
+    async changePassword(id: number, changePasswprdDto : ChangePasswordDto) {
+
+        const user = await this.db.user.findUnique({
+            where: { id }
+        })
+        if (await argon2.verify(user.password, changePasswprdDto.oldPassword)) {
+            const hashedPassword = await argon2.hash(changePasswprdDto.newPassword);
+
+            await this.db.user.update({
+                where :{id},
+                data : { password : hashedPassword}
+            })
+            
+            const payload = { id: user.id, username: user.name, role: user.role };
+            return {
+                access_token: await this.jwtService.signAsync(payload)
+            }
+        }
+        else {
+            throw new Error('Invalid password');
+        }
+
+    }
 
     async login(loginDto: LoginDto) {
-    const user = await this.db.user.findFirstOrThrow({
-        where: {email: loginDto.email}
-    })
-    if (await argon2.verify(user.password, loginDto.password)) {
+        const user = await this.db.user.findFirstOrThrow({
+            where: { email: loginDto.email }
+        })
+        if (await argon2.verify(user.password, loginDto.password)) {
 
-        const payload = {sub: user.id, username: user.name, role: user.role};
-        return {
-            access_token: await this.jwtService.signAsync(payload)
+            const payload = { id: user.id, username: user.name, role: user.role };
+            return {
+                access_token: await this.jwtService.signAsync(payload)
+            }
+        }
+        else {
+            throw new Error('Invalid password');
         }
     }
-    else {
-        throw new Error('Invalid password');
-    }
-  }
 }

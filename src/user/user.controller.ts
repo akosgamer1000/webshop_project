@@ -71,7 +71,7 @@ export class UserController {
    * @param updateUserDto The data to update
    * @returns JSON response
    */
-@Roles(Role.ADMIN)
+  @Roles(Role.ADMIN)
   @Patch(':id(\\d+)+')
   @ApiParam({
     name: 'id',
@@ -83,6 +83,8 @@ export class UserController {
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
   }
+
+
 
   /**
    * Deletes a user by ID
