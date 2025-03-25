@@ -39,7 +39,6 @@ export class OrderService {
               email: createOrderDto.email,
             },
           },
-          email : createOrderDto.email,
           address: createOrderDto.address,
           status: "Pending",
           products: {

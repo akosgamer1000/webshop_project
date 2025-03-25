@@ -56,38 +56,6 @@ export class ProductController {
      * @param productId 
      * @returns 
      */
-  
-    @Patch(':productId(\\d+)+/addToCart')
-    @ApiParam({
-      name: 'productId',
-      type: 'number',
-      description: 'The unique ID of the product'
-    })
-    @ApiResponse({status: 200, description: 'The updated user'})
-    @ApiBadRequestResponse({description: 'The supplied data is invalid'})
-    addProductToCart(@Request() request: UserReq, @Param('productId') productId: string) {
-      const userId = request.user.user.id;
-      return this.productService.addProductToCart(userId, +productId);
-    }
-
-    /**
-       * 
-       * @param productId 
-       * @returns 
-       */
-    
-      @Patch(':productId(\\d+)+/removeFromCart')
-      @ApiParam({
-        name: 'productId',
-        type: 'number',
-        description: 'The unique ID of the product'
-      })
-      @ApiResponse({status: 200, description: 'The updated user'})
-      @ApiBadRequestResponse({description: 'The supplied data is invalid'})
-      removeProductFromCart(@Request() request :UserReq , @Param('productId') productId: string) {
-        const userId = request.user.user.id;
-        return this.productService.removeProductFromCart(userId, +productId);
-      }
     
       
 }

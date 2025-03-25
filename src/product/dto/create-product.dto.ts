@@ -31,6 +31,7 @@ export class CreateProductDto {
     })
     price: number;
     couantity: number;
+    imgSrc : string
     
 
     Processor?: Processor

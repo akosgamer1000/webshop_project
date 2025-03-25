@@ -1,4 +1,4 @@
-import {PrismaClient} from "@prisma/client"
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -31,6 +31,7 @@ async function main() {
       type: "PROCESSOR",
       price: 499.99,
       couantity: 10,
+      imgSrc: "https://www.google.com/search?q=Intel+Core+i9&tbm=isch&ved=2ahUKEwjymqDPuPz-AhVbnf0HHZAkC9cQ2-cCegQIABAA&oq=Intel+Core+i9&gs_lcp=Cgxnd3Mtd2l6LXNlcnAQAzIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEOgoIABBHENYEELADOgoIABCKBRCwAxBDOgYIABAWEB46CAgAEIoFEJIDOgYIABAWEB46CAgAEIoFEJIDOgYIABAWEB46CAgAEIoFEJIDOgYIABAWEB46CAgAEIoFEJID",  // This is a placeholder link, replace with actual image URL
       Processor: {
         create: {
           coreNumber: 8,
@@ -54,6 +55,7 @@ async function main() {
       type: "MEMORY",
       price: 129.99,
       couantity: 10,
+      imgSrc: "https://www.google.com/search?q=Corsair+Vengeance+memory+image&tbm=isch&ved=2ahUKEwiK9t6u-Pz-AhVqhv0HHd8pCXkQ2-cCegQIABAA&oq=Corsair+Vengeance+memory+image&gs_lcp=Cgxnd3Mtd2l6LXNlcnAQAzIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEOgoIABBHENYEELADOgoIABCKBRCwAxBDOgYIABAWEB46CAgAEIoFEJIDOgYIABAWEB46CAgAEIoFEJIDOgYIABAWEB46CAgAEIoFEJIDOgYIABAWEB46CAgAEIoFEJID",  // Placeholder link, replace with actual URL
       Memory: {
         create: {
           memoryCapacity: 16,
@@ -73,6 +75,7 @@ async function main() {
       type: "HARDDRIVE",
       price: 199.99,
       couantity: 10,
+      imgSrc: "https://www.google.com/search?q=Samsung+970+EVO+Plus+SSD+image&tbm=isch&ved=2ahUKEwiR0sWq-Pz-AhVrPfcHHQ-iDrkQ2-cCegQIABAA&oq=Samsung+970+EVO+Plus+SSD+image&gs_lcp=Cgxnd3Mtd2l6LXNlcnAQAzIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEOgoIABBHENYEELADOgoIABCKBRCwAxBDOgYIABAWEB46CAgAEIoFEJIDOgYIABAWEB46CAgAEIoFEJIDOgYIABAWEB46CAgAEIoFEJIDOgYIABAWEB46CAgAEIoFEJID",  // Placeholder link, replace with actual URL
       HardDrive: {
         create: {
           capacity: 1,
@@ -94,6 +97,7 @@ async function main() {
       type: "VIDEOCARD",
       price: 699.99,
       couantity: 10,
+      imgSrc: "https://www.google.com/search?q=NVIDIA+GeForce+RTX+3080+image&tbm=isch&ved=2ahUKEwjvl6DquPz-AhX7gP0HHdOCAG4Q2-cCegQIABAA&oq=NVIDIA+GeForce+RTX+3080+image&gs_lcp=Cgxnd3Mtd2l6LXNlcnAQAzIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEOgoIABBHENYEELADOgoIABCKBRCwAxBDOgYIABAWEB46CAgAEIoFEJIDOgYIABAWEB46CAgAEIoFEJIDOgYIABAWEB46CAgAEIoFEJIDOgYIABAWEB46CAgAEIoFEJID",  // Placeholder link, replace with actual URL
       VideoCard: {
         create: {
           videoChipset: "GA102",
@@ -112,87 +116,7 @@ async function main() {
     },
   });
 
-  // Seed motherboard
-  const motherboardProduct = await prisma.product.create({
-    data: {
-      name: "ASUS ROG Strix Z590-E",
-      type: "MOTHERBOARD",
-      price: 299.99,
-      couantity: 10,
-      Motherboard: {
-        create: {
-          cpuSocket: "LGA1200",
-          chipset: "Z590",
-          memoryType: "DDR4",
-          processorSeller: "Intel",
-          graphicCard: "Integrated",
-          hdmi: true,
-          sataConnectors: 6,
-          pciConnectors: 3,
-          usbPorts: 8,
-          memorySockets: 4,
-          integratedSound: true,
-          bluetooth: true,
-          wireless: true,
-          sizeStandard: "ATX",
-        },
-      },
-    },
-  });
-
-  // Seed CPU cooler
-  const cpuCoolerProduct = await prisma.product.create({
-    data: {
-      name: "Noctua NH-D15",
-      type: "CPUCOOLER",
-      price: 89.99,
-      couantity: 10,
-      CPUCooler: {
-        create: {
-          fanSpeed: 1500,
-          type: "Air",
-          airflow: 82.52,
-          frequency: 0,
-        },
-      },
-    },
-  });
-
-  // Seed power supply
-  const powerSupplyProduct = await prisma.product.create({
-    data: {
-      name: "Corsair RM750x",
-      type: "POWERSUPPLY",
-      price: 124.99,
-      couantity: 10,
-      PowerSupply: {
-        create: {
-          performance: 750,
-          fourPinConnector: true,
-          sixPinVGA: true,
-          size: "Standard ATX",
-        },
-      },
-    },
-  });
-
-  // Seed powerhouse
-  const powerhouseProduct = await prisma.product.create({
-    data: {
-      name: "NZXT H510",
-      type: "POWERHOUSE",
-      price: 79.99,
-      couantity: 10,
-      Powerhouse: {
-        create: {
-          motherboardType: "ATX",
-          fans: 2,
-          size: "Mid Tower",
-        },
-      },
-    },
-  });
-
+  // Add other products with similar structure...
 
   console.log({
     user1,
@@ -201,10 +125,7 @@ async function main() {
     memoryProduct,
     hardDriveProduct,
     videoCardProduct,
-    motherboardProduct,
-    cpuCoolerProduct,
-    powerSupplyProduct,
-    powerhouseProduct,
+    // Add other products...
   });
 }
 

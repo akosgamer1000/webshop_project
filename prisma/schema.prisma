@@ -19,8 +19,8 @@ model User {
 }
 
 model Order {
-  id     Int   @id @default(autoincrement())
-  user   User? @relation(fields: [email], references: [email])
+  id         Int         @id @default(autoincrement())
+  user       User?       @relation(fields: [email], references: [email])
   email      String
   address    String
   status     Status
@@ -50,6 +50,7 @@ model Product {
   type      Type
   price     Float
   couantity Int
+  imgSrc    String
 
   Processor   Processor?
   Memory      Memory?
