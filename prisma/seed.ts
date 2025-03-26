@@ -48,6 +48,75 @@ async function main() {
         },
     },
 });
+const processorProduct1 = await prisma.product.create({
+    data: {
+        name: "Intel Core i7-11700K",
+        manufacturer: "Intel",
+        type: "PROCESSOR",
+        price: 399.99,
+        couantity: 10,
+        imgSrc: "",
+        Processor: {
+          create: {
+            coreNumber: 8,
+            baseFrequency: 3.6,
+            turboBoostFrequency: 5.0,
+            cache: 16,
+            architecture: "x86_64",
+            processorSeller: "Intel",
+            processorModel: "i7-11700K",
+            integratedGraphicModel: "Intel UHD Graphics 750",
+            processorTechnology: "14nm",
+          },
+        },
+      },
+});
+const processorProduct2 = await prisma.product.create({
+    data:  {
+        name: "AMD Ryzen 9 5900X",
+        manufacturer: "AMD",
+        type: "PROCESSOR",
+        price: 549.99,
+        couantity: 10,
+        imgSrc: "",
+        Processor: {
+          create: {
+            coreNumber: 12,
+            baseFrequency: 3.7,
+            turboBoostFrequency: 4.8,
+            cache: 64,
+            architecture: "x86_64",
+            processorSeller: "AMD",
+            processorModel: "Ryzen 9 5900X",
+            integratedGraphicModel: "None",
+            processorTechnology: "7nm",
+          },
+        },
+      },
+});
+const processorProduct3 = await prisma.product.create({
+    data:  {
+        name: "AMD Ryzen 7 5800X",
+        manufacturer: "AMD",
+        type: "PROCESSOR",
+        price: 449.99,
+        couantity: 10,
+        imgSrc: "",
+        Processor: {
+          create: {
+            coreNumber: 8,
+            baseFrequency: 3.8,
+            turboBoostFrequency: 4.7,
+            cache: 32,
+            architecture: "x86_64",
+            processorSeller: "AMD",
+            processorModel: "Ryzen 7 5800X",
+            integratedGraphicModel: "None",
+            processorTechnology: "7nm",
+          },
+        },
+      },
+});
 
 const memoryProduct = await prisma.product.create({
     data: {
