@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma.service';
-import { Product } from './entities/product.entity';
+import { Product } from '@prisma/client';
 
 
 @Injectable()
@@ -63,9 +63,9 @@ export class ProductService {
     });
   }
 
-  findTypes() {
+  filterTypes(filterBy: keyof Product) {
     return this.db.product.groupBy({
-      by: 'type'
+      by: filterBy
     })
   }
 

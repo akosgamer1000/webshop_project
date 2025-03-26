@@ -2,12 +2,11 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request }
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { ApiParam, ApiResponse, ApiBadRequestResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { UserReq } from 'src/user/entities/userReq.entity';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/role.decorator';
 import { Role } from 'src/auth/role.enum';
 import { Public } from 'src/auth/decorators/public.decorator';
+import { Product } from '@prisma/client';
 
 
 @Controller('product')
@@ -28,9 +27,9 @@ export class ProductController {
   }
 
   @Public()
-  @Get('types')
-  findTypes() {
-    return this.productService.findTypes()
+  @Get('filter/:filter')
+  filters(@Param('filter') filter: keyof Product) {
+    return this.productService.filterTypes(filter)
   }
 
   @Public()
