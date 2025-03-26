@@ -45,12 +45,13 @@ model OrderItem {
 }
 
 model Product {
-  id        Int    @id @default(autoincrement())
-  name      String
-  type      Type
-  price     Float
-  couantity Int
-  imgSrc    String
+  id           Int    @id @default(autoincrement())
+  name         String
+  manufacturer String
+  type         Type
+  price        Float
+  couantity    Int
+  imgSrc       String
 
   Processor   Processor?
   Memory      Memory?

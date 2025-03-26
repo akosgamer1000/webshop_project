@@ -19,6 +19,7 @@ export class ProductService {
         type: createProductDto.type,
         price: createProductDto.price,
         imgSrc: createProductDto.imgSrc,
+        manufacturer: createProductDto.manufacturer,
         couantity: createProductDto.couantity,
         Processor: createProductDto.Processor ? { create: createProductDto.Processor } : undefined,
         Memory: createProductDto.Memory ? { create: createProductDto.Memory } : undefined,
