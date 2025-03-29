@@ -9,7 +9,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import { Product } from '@prisma/client';
 
 
-@Controller('product')
+@Controller('products')
 @ApiBearerAuth()
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -30,6 +30,12 @@ export class ProductController {
   @Get('filter/:filter')
   filters(@Param('filter') filter: keyof Product) {
     return this.productService.filterTypes(filter)
+  }
+
+  @Public()
+  @Get('filter/:filter/:where')
+  filtersWhere(@Param('filter') filter: keyof Product , @Param('where') where: string) {
+    return this.productService.filterTypesWhere(filter, where)
   }
 
   @Public()

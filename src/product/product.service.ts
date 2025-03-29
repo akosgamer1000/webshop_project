@@ -69,6 +69,13 @@ export class ProductService {
     })
   }
 
+  filterTypesWhere(filterBy: keyof Product, type: string) {
+    return this.db.product.groupBy({
+      by: filterBy,
+      where: {type: type},
+    })
+  }
+
   async findOne(id: number) {
     const product = await this.db.product.findUnique({
       where: {
