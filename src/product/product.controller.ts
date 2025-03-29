@@ -6,24 +6,35 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/role.decorator';
 import { Role } from 'src/auth/role.enum';
 import { Public } from 'src/auth/decorators/public.decorator';
-import { Product } from '@prisma/client';
+import { Product, Type } from '@prisma/client';
 
 
 @Controller('products')
 @ApiBearerAuth()
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(private readonly productService: ProductService) { }
 
   @Roles(Role.ADMIN)
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
     return this.productService.create(createProductDto);
   }
+  @Public()
+  @Get('search')
+  search(@Request() req) {
+    const query = req.query.search
+    const search = query.split('=')[1]
 
+    if(req.query.search) {
+      return this.productService.search(search)
+    }
+    return this.productService.findAll(req);
+    
+  }
   @Public()
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  findAll(@Request() req) {
+    return this.productService.findAll(req);
   }
 
   @Public()
@@ -34,7 +45,7 @@ export class ProductController {
 
   @Public()
   @Get('filter/:filter/:where')
-  filtersWhere(@Param('filter') filter: keyof Product , @Param('where') where: string) {
+  filtersWhere(@Param('filter') filter: keyof Product, @Param('where') where: Type) {
     return this.productService.filterTypesWhere(filter, where)
   }
 
@@ -61,6 +72,6 @@ export class ProductController {
      * @param productId 
      * @returns 
      */
-    
-      
+
+
 }

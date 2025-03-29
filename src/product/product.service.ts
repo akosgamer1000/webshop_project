@@ -2,15 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma.service';
-import { Product } from '@prisma/client';
+import { Product, Type } from '@prisma/client';
+import { isNil } from 'lodash';
 
 
 @Injectable()
 export class ProductService {
-  
 
-    constructor(private readonly db: PrismaService) {}
-  
+
+  constructor(private readonly db: PrismaService) { }
+
 
   create(createProductDto: CreateProductDto) {
     return this.db.product.create({
@@ -43,9 +44,55 @@ export class ProductService {
     });
   }
 
-  async findAll() {
+  //   applyFilters(products, query) {
+  //     if (!query.search) {
+  //         return products;
+  //     }
+
+  //     // Ensure search term is extracted properly
+  //     query.search = query.search.split('=')[1]
+  //     const filters = query.search.toLowerCase().split('+').filter(term => term.trim() !== "");
+
+  //     if (filters.length === 0) {
+  //         return products; // If no valid filters, return all products
+  //     }
+
+  //     // Use `.filter` to avoid redundant iterations
+  //     return products.filter(product => {
+  //         return filters.some(filter => 
+  //             product.name.toLowerCase().includes(filter) ||
+  //             product.type.toLowerCase().includes(filter) ||
+  //             product.manufacturer.toLowerCase().includes(filter)
+  //         );
+  //     });
+  // }
+
+  async search(query: string) {
+
+    const formattedQuery = query.toUpperCase();
+
+    const isValidEnum = Object.values(Type).includes(formattedQuery as Type);
     const products = await this.db.product.findMany({
-      include :{
+      where: {
+        OR: [
+          { name: { contains: query.toLowerCase() } },
+          isValidEnum ? { type: { equals: formattedQuery as Type } } : {},
+          { manufacturer: { contains: query.toLowerCase() } }
+        ]
+      }
+    });
+
+
+    return products.map(product => {
+      return Object.fromEntries(
+        Object.entries(product).filter(([_, value]) => !isNil(value))
+      );
+    })
+  }
+
+  async findAll(req) {
+    const products = await this.db.product.findMany({
+      include: {
         Processor: true,
         Memory: true,
         HardDrive: true,
@@ -56,12 +103,15 @@ export class ProductService {
         Powerhouse: true
       }
     });
-    return products.map(product => {
-      return Object.fromEntries(
-        Object.entries(product).filter(([key, value]) => value !== null)
-      );
-    });
+
+
+    return products.map(product =>
+      Object.fromEntries(
+        Object.entries(product).filter(([_, value]) => value !== null)
+      )
+    );
   }
+
 
   filterTypes(filterBy: keyof Product) {
     return this.db.product.groupBy({
@@ -69,10 +119,10 @@ export class ProductService {
     })
   }
 
-  filterTypesWhere(filterBy: keyof Product, type: string) {
+  filterTypesWhere(filterBy: keyof Product, type: Type) {
     return this.db.product.groupBy({
       by: filterBy,
-      where: {type: type},
+      where: { type: type },
     })
   }
 
@@ -81,7 +131,7 @@ export class ProductService {
       where: {
         id: id
       },
-      include :{
+      include: {
         Processor: true,
         Memory: true,
         HardDrive: true,
