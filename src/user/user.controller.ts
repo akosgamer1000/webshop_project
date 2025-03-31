@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, ParseIntPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -50,7 +50,7 @@ export class UserController {
    * @returns JSON response
    */
 
-  @Get(':id(\\d+)+')
+  @Get(':id')
   @Roles(Role.ADMIN)
   @ApiParam({
     name: 'id',
@@ -59,9 +59,9 @@ export class UserController {
   })
   @ApiResponse({status: 200, description: 'The user with the given ID'})
   @ApiBadRequestResponse({description: 'The supplied data is invalid'})
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     console.log(id)
-    return this.userService.findOne(+id);        
+    return this.userService.findOne(id);        
   }  
 
   /**
@@ -72,7 +72,7 @@ export class UserController {
    * @returns JSON response
    */
   @Roles(Role.ADMIN)
-  @Patch(':id(\\d+)+')
+  @Patch(':id')
   @ApiParam({
     name: 'id',
     type: 'number',
@@ -80,8 +80,8 @@ export class UserController {
   })
   @ApiResponse({status: 200, description: 'The updated user'})
   @ApiBadRequestResponse({description: 'The supplied data is invalid'})
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
+    return this.userService.update(id, updateUserDto);
   }
 
 
@@ -93,7 +93,7 @@ export class UserController {
    * @returns JSON response
    */
   @Roles(Role.ADMIN)
-  @Delete(':id(\\d+)+')
+  @Delete(':id')
   @ApiParam({
     name: 'id',
     type: 'number',
@@ -101,7 +101,7 @@ export class UserController {
   })
   @ApiResponse({status: 200, description: 'The deleted user'})
   @ApiBadRequestResponse({description: 'The supplied data is invalid'})
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.remove(id);
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, ParseIntPipe } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -40,8 +40,8 @@ export class OrderController {
     return this.orderService.updateItemInOrder(+id, updateOrderDto);
   }
 
-  @Patch(':orderId(\\d+)+/removeFromOrder/:productId(\\d+)+')
-  removeItemFromOrder(@Param('orderId') id: string, @Param('productId') productId: string) {
+  @Patch(':orderId/removeFromOrder/:productId')
+  removeItemFromOrder(@Param('orderId', ParseIntPipe) id: string, @Param('productId', ParseIntPipe) productId: string) {
     console.log("asd")
     return this.orderService.removeItemFromOrder(+id, +productId)
   }

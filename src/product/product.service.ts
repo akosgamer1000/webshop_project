@@ -13,13 +13,13 @@ export class ProductService {
   constructor(private readonly db: PrismaService) { }
 
 
-  create(createProductDto: CreateProductDto) {
+  create(createProductDto: CreateProductDto, imagePath: string) {
     return this.db.product.create({
       data: {
         name: createProductDto.name,
         type: createProductDto.type,
         price: createProductDto.price,
-        imgSrc: createProductDto.imgSrc,
+        imgSrc: createProductDto.imgSrc || imagePath,
         manufacturer: createProductDto.manufacturer,
         couantity: createProductDto.couantity,
         Processor: createProductDto.Processor ? { create: createProductDto.Processor } : undefined,
@@ -69,9 +69,18 @@ export class ProductService {
 
   async search(query: string) {
 
-    const formattedQuery = query.toUpperCase();
+    let formattedQuery = query.toUpperCase();
 
-    const isValidEnum = Object.values(Type).includes(formattedQuery as Type);
+    const isValidEnum = Object.values(Type).map(value => value.includes(formattedQuery) ? true : false).some(Boolean);
+    if (isValidEnum) {
+      Object.values(Type).map((value) => {
+        console.log(value)
+        if (value.includes(formattedQuery)) {
+          console.log(value)
+          formattedQuery = value as Type;
+        }
+      })
+    }
     const products = await this.db.product.findMany({
       where: {
         OR: [
@@ -79,8 +88,9 @@ export class ProductService {
           isValidEnum ? { type: { equals: formattedQuery as Type } } : {},
           { manufacturer: { contains: query.toLowerCase() } }
         ]
-      }
+      } 
     });
+    console.log(products)
 
 
     return products.map(product => {
@@ -155,6 +165,8 @@ export class ProductService {
         type: updateProductDto.type,
         price: updateProductDto.price,
         couantity: updateProductDto.couantity,
+        imgSrc: updateProductDto.imgSrc,
+        manufacturer: updateProductDto.manufacturer,
         Processor: updateProductDto.Processor ? { update: updateProductDto.Processor } : undefined,
         Memory: updateProductDto.Memory ? { update: updateProductDto.Memory } : undefined,
         HardDrive: updateProductDto.HardDrive ? { update: updateProductDto.HardDrive } : undefined,
