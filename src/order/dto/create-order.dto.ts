@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDefined, IsEmail, IsIn, IsNumber, IsString } from "class-validator";
+import { IsDefined, IsEmail, IsNumber, IsString } from "class-validator";
 
 export class CreateOrderDto {
 

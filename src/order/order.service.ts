@@ -68,7 +68,6 @@ export class OrderService {
             }),
           },
           totalPrice: totalPrice
-
         },
       })
     }
@@ -89,54 +88,65 @@ export class OrderService {
     });
   }
 
-  updateItemInOrder(id: number, updateOrderDto: UpdateOrderDto) {
-    updateOrderDto.products.map(async (product) => {
-      if (await this.db.orderItem.count({
-        where: {
-          productId: product.productId,
-          orderId: id
-        }
-      }) === 0) {
-        console.log("Adding new product to order");
-        return await this.db.order.update({
-          where: { id: id },
-          data: {
-            products: {
-              create: {
-                productId: product.productId,
-                quantity: product.quantity
-              }
-            }
-          },
+  
 
-          include: {
-            products: true
-          }
-        })
-      }
-      else {
-        console.log("updating product")
-        const item = await this.db.orderItem.findFirst({
+  updateItemInOrder(id: number, updateOrderDto: UpdateOrderDto) {
+    if(updateOrderDto.products) {
+      updateOrderDto.products.map(async (product) => {
+        if (await this.db.orderItem.count({
           where: {
             productId: product.productId,
             orderId: id
           }
-        });
-        return await this.db.order.update({
-          where: { id: id },
-          data: {
-            products: {
-              update: {
-                where: { id: item.id },
-                data: {
+        }) === 0) {
+          console.log("Adding new product to order");
+          return await this.db.order.update({
+            where: { id: id },
+            data: {
+              products: {
+                create: {
+                  productId: product.productId,
                   quantity: product.quantity
                 }
               }
+            },
+  
+            include: {
+              products: true
             }
-          }
-        })
-      }
-    });
+          })
+        }
+        else {
+          console.log("updating product")
+          const item = await this.db.orderItem.findFirst({
+            where: {
+              productId: product.productId,
+              orderId: id
+            }
+          });
+          return await this.db.order.update({
+            where: { id: id },
+            data: {
+              products: {
+                update: {
+                  where: { id: item.id },
+                  data: {
+                    quantity: product.quantity
+                  }
+                }
+              }
+            }
+          })
+        }
+      });
+    } else {
+      this.db.order.update({
+        where : {id},
+        data : {
+          status: updateOrderDto.status
+        }
+      })
+    }
   }
   async removeItemFromOrder(orderId: number, productId: number) {
     const orderItem = await this.db.orderItem.findFirst({
