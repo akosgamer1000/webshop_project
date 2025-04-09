@@ -90,9 +90,9 @@ export class OrderService {
 
   
 
-  updateItemInOrder(id: number, updateOrderDto: UpdateOrderDto) {
+  async updateItemInOrder(id: number, updateOrderDto: UpdateOrderDto) {
     if(updateOrderDto.products) {
-      updateOrderDto.products.map(async (product) => {
+      return Promise.all(updateOrderDto.products.map(async (product) => {
         if (await this.db.orderItem.count({
           where: {
             productId: product.productId,
@@ -110,14 +110,13 @@ export class OrderService {
                 }
               }
             },
-  
             include: {
               products: true
             }
-          })
+          });
         }
         else {
-          console.log("updating product")
+          console.log("updating product");
           const item = await this.db.orderItem.findFirst({
             where: {
               productId: product.productId,
@@ -135,19 +134,25 @@ export class OrderService {
                   }
                 }
               }
+            },
+            include: {
+              products: true
             }
-          })
+          });
+        }
+      }));
+    } else {
+      return await this.db.order.update({
+        where: { id },
+        data: {
+          status: updateOrderDto.status
+        },
+        include: {
+          products: true
         }
       });
-    } else {
-      this.db.order.update({
-        where : {id},
-        data : {
-          status: updateOrderDto.status
-        }
-      })
     }
-  }
+  } 
   async removeItemFromOrder(orderId: number, productId: number) {
     const orderItem = await this.db.orderItem.findFirst({
       where: {
