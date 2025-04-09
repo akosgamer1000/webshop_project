@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, UnauthorizedException,Request, Patch, Delete } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './login.dto';
+import { LoginDto } from './dto/login.dto';
 import { ApiBearerAuth, ApiParam, ApiProperty } from '@nestjs/swagger';
 import { Public } from './decorators/public.decorator';
 import { UserService } from 'src/user/user.service';
@@ -37,7 +37,7 @@ export class AuthController {
   
   @Get('profile')
   getProfile(@Request() req) {
-    console.log(req)
+    console.log(req.user)
     return req.user;
   }
 

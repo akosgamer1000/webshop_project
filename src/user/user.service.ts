@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
@@ -9,19 +9,26 @@ import * as argon2 from 'argon2';
 @Injectable()
 export class UserService {
 
-  constructor(private readonly db: PrismaService) {}
+  constructor(private readonly db: PrismaService) { }
 
   async create(createUserDto: CreateUserDto) {
+    const email = await this.db.user.findUnique({
+      where: { email: createUserDto.email }
+    })
+    if(email) {
+      throw new BadRequestException({errors: {email : "user already exists"}})
+    }
+
     const hashedPassword = await argon2.hash(createUserDto.password);
     const user = await this.db.user.create({
-      data : {
+      data: {
         ...createUserDto,
         password: hashedPassword
       }
     });
     delete user.password;
 
-    
+
     return user;
   }
 
@@ -38,7 +45,7 @@ export class UserService {
 
   async findOne(id: number) {
     const user = await this.db.user.findUnique({
-      where: {id : id}
+      where: { id: id }
     });
     delete user.password
     return user
@@ -46,14 +53,14 @@ export class UserService {
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return this.db.user.update({
-      where: {id},
+      where: { id },
       data: updateUserDto
     });
   }
 
   remove(id: number) {
     return this.db.user.delete({
-      where: {id}
+      where: { id }
     });
   }
 }

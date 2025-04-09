@@ -22,5 +22,4 @@ class CreateOrderItemDto {
     @IsDefined()
     @IsNumber()
     quantity: number;
-    
 }

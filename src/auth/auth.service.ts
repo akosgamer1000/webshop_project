@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LoginDto } from './login.dto';
+import { LoginDto } from './dto/login.dto';
 import { PrismaService } from 'src/prisma.service';
 import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
@@ -43,7 +43,7 @@ export class AuthService {
         })
         if (await argon2.verify(user.password, loginDto.password)) {
 
-            const payload = { id: user.id, username: user.name, role: user.role };
+            const payload = { id: user.id, username: user.name, email : user.email, address : user.address, role: user.role };
             return {
                 access_token: await this.jwtService.signAsync(payload)
             }

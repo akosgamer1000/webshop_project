@@ -1,11 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDefined, IsEmail, IsIn, IsString, IsStrongPassword } from "class-validator";
+import { IsDefined, IsEmail, IsIn, IsNotEmpty, IsString, IsStrongPassword } from "class-validator";
 
 export class CreateUserDto {
 
-    @IsDefined({
-        message: "name field must be filled!"
-    })
+    @IsNotEmpty()
     @IsString()
     @ApiProperty({
         description: 'Name of the user',
@@ -13,9 +11,7 @@ export class CreateUserDto {
     })
     name : string;
 
-    @IsDefined({
-        message: "email field must be filled!"
-    })
+    @IsNotEmpty()
     @IsEmail()
     @ApiProperty({
         description: 'Email of the user',
@@ -23,9 +19,7 @@ export class CreateUserDto {
     })
     email : string;
 
-    @IsDefined({
-        message: "password field must be filled!"
-    })
+    @IsNotEmpty()
     @IsStrongPassword()
     @ApiProperty({
         description: 'Password of the user (minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1)',
@@ -33,9 +27,7 @@ export class CreateUserDto {
     })
     password : string;
 
-    @IsDefined({
-        message: "address field must be filled!"
-    })
+    @IsNotEmpty()
     @IsString()
     @ApiProperty({
         description: 'Address of the user',
@@ -43,9 +35,7 @@ export class CreateUserDto {
     })
     address : string;
 
-    @IsDefined({
-        message: "role field must be filled!"
-    })
+    @IsNotEmpty()
     @IsString()
     @IsIn(["user", "admin"], {
         message: "role field has to be one of the following: user, admin!"
