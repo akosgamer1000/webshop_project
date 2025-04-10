@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { PrismaService } from 'src/prisma.service';
 import * as argon2 from 'argon2';
@@ -30,6 +30,8 @@ export class AuthService {
     ) { }
 
     async update(id: number, updateUserDto: UpdateUserDto) {
+    
+        console.log(updateUserDto.address, updateUserDto.name)
         const user = await this.db.user.update({
             where: { id },
             data: updateUserDto

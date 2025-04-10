@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UnauthorizedException,Request, Patch, Delete, Param } from '@nestjs/common';
+import { Body, Controller, Get, Post, UnauthorizedException, Request, Patch, Delete, Param, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { ApiBearerAuth, ApiParam, ApiProperty } from '@nestjs/swagger';
@@ -13,7 +13,7 @@ import { DeleteProfile } from './dto/deleteprofile.dto';
 @Controller('auth')
 @ApiBearerAuth()
 export class AuthController {
-  constructor(private readonly authService: AuthService, private readonly userService : UserService) {}
+  constructor(private readonly authService: AuthService, private readonly userService: UserService) { }
 
   /**
    * Login with email and password
@@ -23,7 +23,7 @@ export class AuthController {
    */
   @Public()
   @Post('login')
-  @ApiParam({name: 'loginDto', type: LoginDto})
+  @ApiParam({ name: 'loginDto', type: LoginDto })
   async login(@Body() loginDto: LoginDto) {
     try {
       return await this.authService.login(loginDto);
@@ -37,7 +37,7 @@ export class AuthController {
    * 
    * @returns JSON response
    */
-  
+
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
@@ -49,10 +49,21 @@ export class AuthController {
    * @returns JSON response
    */
   @Patch('profile')
-  @ApiParam({name: 'updateUserDto', type: UpdateUserDto})
-  patchProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
-    delete updateUserDto.password
-    return this.authService.update(req.user.id, updateUserDto);
+  @ApiParam({ name: 'updateUserDto', type: UpdateUserDto })
+  async patchProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
+    if (updateUserDto) {
+      delete updateUserDto.password
+      delete updateUserDto.email
+      delete updateUserDto.role
+      return await this.authService.update(req.user.id, updateUserDto);
+    }
+    else {
+      throw new BadRequestException('one of the fields should not be empty')
+    }
+
+
+
+
   }
 
   /**
@@ -63,18 +74,18 @@ export class AuthController {
    * @returns 
    */
 
-  @ApiParam({name: 'oldPassword', type: String, example: "Asd1234."})
-  @ApiParam({name: 'newPassword', type: String, example: "Dsa4321."})
-  @ApiProperty({name: 'oldPassword', type: String, example: "Asd1234."})
-  @ApiProperty({name: 'newPassword', type: String, example: "Dsa4321."})
+  @ApiParam({ name: 'oldPassword', type: String, example: "Asd1234." })
+  @ApiParam({ name: 'newPassword', type: String, example: "Dsa4321." })
+  @ApiProperty({ name: 'oldPassword', type: String, example: "Asd1234." })
+  @ApiProperty({ name: 'newPassword', type: String, example: "Dsa4321." })
   @Patch('changePassword')
-  async changePassword(@Request() req, @Body() changePasswordDto : ChangePasswordDto) {
+  async changePassword(@Request() req, @Body() changePasswordDto: ChangePasswordDto) {
     try {
-      return await this.authService.changePassword(req.user.id, changePasswordDto )
+      return await this.authService.changePassword(req.user.id, changePasswordDto)
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials');
     }
-  } 
+  }
 
   /**
    * Deletes the profile of the user that is logged in
@@ -83,7 +94,7 @@ export class AuthController {
    */
 
   @Delete('profile')
-  async deleteProfile(@Request() req, @Body() password : DeleteProfile ) {
+  async deleteProfile(@Request() req, @Body() password: DeleteProfile) {
     try {
       return await this.authService.remove(req.user.id, password);
     } catch (error) {
