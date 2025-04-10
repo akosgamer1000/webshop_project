@@ -29,7 +29,6 @@ import { IS_PUBLIC_KEY } from './decorators/public.decorator';
       const request = context.switchToHttp().getRequest();
       const token = this.extractTokenFromHeader(request);
       if (!token) {
-        console.log('nop');
         throw new UnauthorizedException();
       }
       try {
@@ -40,12 +39,10 @@ import { IS_PUBLIC_KEY } from './decorators/public.decorator';
             secret: jwtConstants.secret
           }
         );
-        console.log(payload);
         // 💡 We're assigning the payload to the request object here
         // so that we can access it in our route handlers
         request['user'] = payload;
       } catch {
-        console.log('nop2')
         throw new UnauthorizedException();
       }
       return true;

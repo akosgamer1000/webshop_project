@@ -11,16 +11,16 @@ export class CreateUserDto {
     })
     name : string;
 
-    @IsNotEmpty()
     @IsEmail()
+    @IsNotEmpty()
     @ApiProperty({
         description: 'Email of the user',
         example: 'barmiAron@example.com'
     })
     email : string;
 
-    @IsNotEmpty()
     @IsStrongPassword()
+    @IsNotEmpty()
     @ApiProperty({
         description: 'Password of the user (minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1)',
         example: 'Asd1234.'

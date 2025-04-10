@@ -1,10 +1,13 @@
-import { Body, Controller, Get, Post, UnauthorizedException,Request, Patch, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Post, UnauthorizedException,Request, Patch, Delete, Param } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { ApiBearerAuth, ApiParam, ApiProperty } from '@nestjs/swagger';
 import { Public } from './decorators/public.decorator';
 import { UserService } from 'src/user/user.service';
 import { ChangePasswordDto } from './dto/changePassword.dto';
+import { update } from 'lodash';
+import { UpdateUserDto } from 'src/user/dto/update-user.dto';
+import { DeleteProfile } from './dto/deleteprofile.dto';
 
 
 @Controller('auth')
@@ -37,7 +40,6 @@ export class AuthController {
   
   @Get('profile')
   getProfile(@Request() req) {
-    console.log(req.user)
     return req.user;
   }
 
@@ -47,8 +49,10 @@ export class AuthController {
    * @returns JSON response
    */
   @Patch('profile')
-  patchProfile(@Request() req) {
-    return this.userService.update(req.user.id, req.body);
+  @ApiParam({name: 'updateUserDto', type: UpdateUserDto})
+  patchProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
+    delete updateUserDto.password
+    return this.authService.update(req.user.id, updateUserDto);
   }
 
   /**
@@ -79,8 +83,13 @@ export class AuthController {
    */
 
   @Delete('profile')
-  deleteProfile(@Request() req) {
-    return this.userService.remove(req.user.id);
+  async deleteProfile(@Request() req, @Body() password : DeleteProfile ) {
+    try {
+      return await this.authService.remove(req.user.id, password);
+    } catch (error) {
+      console.log('asd')
+      throw new UnauthorizedException('Invalid credentials');
+    }
   }
 
 }
