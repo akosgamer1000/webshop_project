@@ -41,10 +41,9 @@ export class ProductController {
   @Get('search')
   search(@Request() req) {
     const query = req.query.search
-    const search = query.split('=')[1]
-
-    if(req.query.search) {
-      return this.productService.search(search)
+    console.log(query)
+    if(query) {
+      return this.productService.search(query)
     }
     return this.productService.findAll(req);
     

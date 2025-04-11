@@ -69,7 +69,7 @@ export class ProductService {
 
   async search(query: string) {
 
-    let formattedQuery = query.toUpperCase();
+    let formattedQuery = query.toUpperCase(); 
 
     const isValidEnum = Object.values(Type).map(value => value.includes(formattedQuery) ? true : false).some(Boolean);
     if (isValidEnum) {
@@ -81,13 +81,23 @@ export class ProductService {
         }
       })
     }
+    const words = query.trim().split(/\s+/); 
+
+
+    // [
+    //   { name: { contains: query.toLowerCase() } },
+    //   isValidEnum ? { type: { equals: formattedQuery as Type } } : {},
+    //   { manufacturer: { contains: query.toLowerCase() } }
+    // ]
+    
+    const orFilters = words.flatMap((word) => [
+      { name: { contains: word } },
+      { manufacturer: { contains: word } }
+    ]);
+
     const products = await this.db.product.findMany({
       where: {
-        OR: [
-          { name: { contains: query.toLowerCase() } },
-          isValidEnum ? { type: { equals: formattedQuery as Type } } : {},
-          { manufacturer: { contains: query.toLowerCase() } }
-        ]
+        OR: orFilters
       } 
     });
     console.log(products)
