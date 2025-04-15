@@ -5,9 +5,9 @@ import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { Roles } from 'src/auth/decorators/role.decorator';
-import { Role } from 'src/auth/role.enum';
-import { Public } from 'src/auth/decorators/public.decorator';
+import { Roles } from '../auth/decorators/role.decorator';
+import { Role } from '../auth/role.enum';
+import { Public } from '../auth/decorators/public.decorator';
 import { Product, Type } from '@prisma/client';
 import { extname } from 'path';
 
@@ -40,13 +40,13 @@ export class ProductController {
   @Public()
   @Get('search')
   search(@Request() req) {
-    const query = req.query.search
-    console.log(query)
-    if(query) {
-      return this.productService.search(query)
+    const search = req.query.search
+    if(search) {
+      return this.productService.search(search)
     }
     return this.productService.findAll(req);
     
+
   }
   @Public()
   @Get()

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderItem } from '@prisma/client';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../prisma.service';
 import { create } from 'domain';
 
 @Injectable()
@@ -23,7 +23,6 @@ export class OrderService {
       });
       return price.price * product.quantity;
     })
-    console.log(await Promise.all(productPrices))
 
     const totalPrice = (await Promise.all(productPrices)).reduce((acc, product) => {
       return acc + product
@@ -72,6 +71,7 @@ export class OrderService {
       })
     }
   }
+
 
   findAll() {
     return this.db.order.findMany();

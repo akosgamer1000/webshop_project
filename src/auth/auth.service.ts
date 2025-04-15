@@ -1,85 +1,86 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, UnauthorizedException, Injectable } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../prisma.service';
 import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ChangePasswordDto } from './dto/changePassword.dto';
-import { UpdateUserDto } from 'src/user/dto/update-user.dto';
+import { UpdateUserDto } from '../user/dto/update-user.dto';
 import { DeleteProfile } from './dto/deleteprofile.dto';
 
 @Injectable()
 export class AuthService {
-    async remove(id: number, password: DeleteProfile) {
-        const user = await this.db.user.findUnique({
-            where: { id }
-        });
-        if (await argon2.verify(user.password, password.password)) {
-            return this.db.user.delete({
-                where: { id }
-            });
-        }
-        else {
-            throw new Error('Invalid password');
-        }
-    }
-
-
     constructor(
         private readonly db: PrismaService,
         private readonly jwtService: JwtService
     ) { }
 
+    private async verifyPassword(userId: number, password: string): Promise<boolean> {
+        const user = await this.db.user.findUnique({
+            where: { id: userId }
+        });
+        return await argon2.verify(user.password, password);
+    }
+
+    async remove(id: number, password: DeleteProfile) {
+        const user = await this.db.user.findUnique({
+            where: { id }
+        });
+
+        if (!await this.verifyPassword(user.id, password.password)) {
+            throw new UnauthorizedException('Invalid password');
+        }
+
+        return this.db.user.delete({
+            where: { id }
+        });
+    }
+
     async update(id: number, updateUserDto: UpdateUserDto) {
-    
-        console.log(updateUserDto.address, updateUserDto.name)
         const user = await this.db.user.update({
             where: { id },
             data: updateUserDto
         });
+
         const payload = { id: user.id, username: user.name, email: user.email, address: user.address, role: user.role };
         return {
             access_token: await this.jwtService.signAsync(payload)
-        }
+        };
     }
 
-    async changePassword(id: number, changePasswprdDto: ChangePasswordDto) {
-
+    async changePassword(id: number, changePasswordDto: ChangePasswordDto) {
         const user = await this.db.user.findUnique({
             where: { id }
-        })
+        });
 
-        if (await argon2.verify(user.password, changePasswprdDto.oldPassword)) {
-            const hashedPassword = await argon2.hash(changePasswprdDto.newPassword);
-
-            await this.db.user.update({
-                where: { id },
-                data: { password: hashedPassword }
-            })
-
-            const payload = { id: user.id, username: user.name, email: user.email, address: user.address, role: user.role };
-            return {
-                access_token: await this.jwtService.signAsync(payload)
-            }
-        }
-        else {
-            throw new Error('Invalid password');
+        if (!await this.verifyPassword(user.id, changePasswordDto.oldPassword)) {
+            throw new UnauthorizedException('Invalid password');
         }
 
+        const hashedPassword = await argon2.hash(changePasswordDto.newPassword);
+
+        await this.db.user.update({
+            where: { id },
+            data: { password: hashedPassword }
+        });
+
+        const payload = { id: user.id, username: user.name, email: user.email, address: user.address, role: user.role };
+        return {
+            access_token: await this.jwtService.signAsync(payload)
+        };
     }
 
     async login(loginDto: LoginDto) {
         const user = await this.db.user.findFirstOrThrow({
             where: { email: loginDto.email }
-        })
-        if (await argon2.verify(user.password, loginDto.password)) {
+        });
 
-            const payload = { id: user.id, username: user.name, email: user.email, address: user.address, role: user.role };
-            return {
-                access_token: await this.jwtService.signAsync(payload)
-            }
+        if (!await this.verifyPassword(user.id, loginDto.password)) {
+            throw new UnauthorizedException('Invalid password');
         }
-        else {
-            throw new Error('Invalid password');
-        }
+
+        const payload = { id: user.id, username: user.name, email: user.email, address: user.address, role: user.role };
+        return {
+            access_token: await this.jwtService.signAsync(payload)
+        };
     }
 }

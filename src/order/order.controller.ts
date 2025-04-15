@@ -3,8 +3,8 @@ import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { Public } from 'src/auth/decorators/public.decorator';
-import { UserService } from 'src/user/user.service';
+import { Public } from '../auth/decorators/public.decorator';
+import { UserService } from '../user/user.service';
 
 @Controller('order')
 @ApiBearerAuth()
@@ -14,13 +14,9 @@ export class OrderController {
     private readonly userService: UserService
   ) { }
 
+  @Public()
   @Post()
-  async create(@Request() req, @Body() createOrderDto: CreateOrderDto) {
-
-    const user = await this.userService.findOne(req.user.id)
-    createOrderDto.email = user.email;
-    createOrderDto.address = user.address;
-    console.log(req.user)
+  async create( @Body() createOrderDto: CreateOrderDto) {
 
     return this.orderService.create(createOrderDto);
   }

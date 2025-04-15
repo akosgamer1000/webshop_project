@@ -1,27 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { PrismaService } from 'src/prisma.service';
-import { Product, Type } from '@prisma/client';
+import { PrismaService } from '../prisma.service';
+import { Prisma, Product, Type } from '@prisma/client';
 import { isNil } from 'lodash';
-
 
 @Injectable()
 export class ProductService {
+  constructor(private readonly db: PrismaService) {}
 
-
-  constructor(private readonly db: PrismaService) { }
-
-
-  create(createProductDto: CreateProductDto, imagePath: string) {
-    return this.db.product.create({
+  async create(createProductDto: CreateProductDto, imagePath: string) {
+    const product =  await this.db.product.create({
       data: {
         name: createProductDto.name,
         type: createProductDto.type,
         price: createProductDto.price,
         imgSrc: createProductDto.imgSrc || imagePath,
         manufacturer: createProductDto.manufacturer,
-        couantity: createProductDto.couantity,
+        couantity: createProductDto.couantity, // This should be `quantity` instead
         Processor: createProductDto.Processor ? { create: createProductDto.Processor } : undefined,
         Memory: createProductDto.Memory ? { create: createProductDto.Memory } : undefined,
         HardDrive: createProductDto.HardDrive ? { create: createProductDto.HardDrive } : undefined,
@@ -42,72 +38,98 @@ export class ProductService {
         Powerhouse: true,
       },
     });
+
+    return Object.fromEntries(
+      Object.entries(product).filter(([key, value]) => value !== undefined),
+    );
   }
 
-  //   applyFilters(products, query) {
-  //     if (!query.search) {
-  //         return products;
-  //     }
+  async search(search: string) {
+    let formattedQuery = search.toUpperCase();
 
-  //     // Ensure search term is extracted properly
-  //     query.search = query.search.split('=')[1]
-  //     const filters = query.search.toLowerCase().split('+').filter(term => term.trim() !== "");
-
-  //     if (filters.length === 0) {
-  //         return products; // If no valid filters, return all products
-  //     }
-
-  //     // Use `.filter` to avoid redundant iterations
-  //     return products.filter(product => {
-  //         return filters.some(filter => 
-  //             product.name.toLowerCase().includes(filter) ||
-  //             product.type.toLowerCase().includes(filter) ||
-  //             product.manufacturer.toLowerCase().includes(filter)
-  //         );
-  //     });
-  // }
-
-  async search(query: string) {
-
-    let formattedQuery = query.toUpperCase(); 
-
-    const isValidEnum = Object.values(Type).map(value => value.includes(formattedQuery) ? true : false).some(Boolean);
+    // Match known enum type
+    const matchedType = Object.values(Type).find((value) =>
+      value.toUpperCase().includes(formattedQuery),
+    );
+    const isValidEnum = Boolean(matchedType);
     if (isValidEnum) {
-      Object.values(Type).map((value) => {
-        console.log(value)
-        if (value.includes(formattedQuery)) {
-          console.log(value)
-          formattedQuery = value as Type;
-        }
-      })
+      formattedQuery = matchedType as Type;
     }
-    const words = query.trim().split(/\s+/); 
 
+    const words = search ? search.trim().split(/\s+/) : [];
 
-    // [
-    //   { name: { contains: query.toLowerCase() } },
-    //   isValidEnum ? { type: { equals: formattedQuery as Type } } : {},
-    //   { manufacturer: { contains: query.toLowerCase() } }
-    // ]
-    
-    const orFilters = words.flatMap((word) => [
-      { name: { contains: word } },
-      { manufacturer: { contains: word } }
-    ]);
+    const andFilters: Prisma.ProductWhereInput[] = [];
+
+    let minPrice: number | null = null;
+    let maxPrice: number | null = null;
+
+    for (const word of words) {
+      const lowerWord = word.toLowerCase();
+
+      let isPriceWord = false;
+
+      if (lowerWord.startsWith('>')) {
+        const price = parseFloat(lowerWord.replace('>', '').replace('$', '').trim());
+        if (!isNaN(price)) {
+          minPrice = price;
+          isPriceWord = true;
+        }
+      } else if (lowerWord.startsWith('<')) {
+        const price = parseFloat(lowerWord.replace('<', '').replace('$', '').trim());
+        if (!isNaN(price)) {
+          maxPrice = price;
+          isPriceWord = true;
+        }
+      } else if (lowerWord.includes('-')) {
+        const [min, max] = lowerWord.split('-').map((val) => parseFloat(val.replace('$', '').trim()));
+        if (!isNaN(min) && !isNaN(max)) {
+          minPrice = min;
+          maxPrice = max;
+          isPriceWord = true;
+        }
+      }
+
+      if (isPriceWord) {
+        // Skip word-based filters for price keywords
+        continue;
+      }
+
+      // Otherwise, treat it as a normal word
+      const wordFilters: Prisma.ProductWhereInput[] = [
+        { name: { contains: lowerWord } },
+        { manufacturer: { contains: lowerWord } },
+      ];
+
+      const matchingEnum = Object.values(Type).find((t) =>
+        t.toUpperCase().includes(word.toUpperCase()),
+      );
+      if (matchingEnum) {
+        wordFilters.push({ type: { equals: matchingEnum as Type } });
+      }
+
+      andFilters.push({ OR: wordFilters });
+    }
+
+    // Add price filter if price range is found
+    if (minPrice !== null || maxPrice !== null) {
+      andFilters.push({
+        price: {
+          gte: minPrice || undefined, // Use undefined if minPrice is null
+          lte: maxPrice || undefined, // Use undefined if maxPrice is null
+        },
+      });
+    }
 
     const products = await this.db.product.findMany({
       where: {
-        OR: orFilters
-      } 
+        AND: andFilters,
+      },
     });
-    console.log(products)
 
-
-    return products.map(product => {
-      return Object.fromEntries(
-        Object.entries(product).filter(([_, value]) => !isNil(value))
-      );
-    })
+    // Return products with no null values
+    return products.map((product) =>
+      Object.fromEntries(Object.entries(product).filter(([_, value]) => value != null)),
+    );
   }
 
   async findAll(req) {
@@ -120,36 +142,32 @@ export class ProductService {
         Motherboard: true,
         CPUCooler: true,
         PowerSupply: true,
-        Powerhouse: true
-      }
+        Powerhouse: true,
+      },
     });
 
-
-    return products.map(product =>
-      Object.fromEntries(
-        Object.entries(product).filter(([_, value]) => value !== null)
-      )
+    return products.map((product) =>
+      Object.fromEntries(Object.entries(product).filter(([_, value]) => value !== null)),
     );
   }
 
-
   filterTypes(filterBy: keyof Product) {
     return this.db.product.groupBy({
-      by: filterBy
-    })
+      by: [filterBy],
+    });
   }
 
   filterTypesWhere(filterBy: keyof Product, type: Type) {
     return this.db.product.groupBy({
-      by: filterBy,
+      by: [filterBy],
       where: { type: type },
-    })
+    });
   }
 
   async findOne(id: number) {
     const product = await this.db.product.findUnique({
       where: {
-        id: id
+        id: id,
       },
       include: {
         Processor: true,
@@ -159,16 +177,16 @@ export class ProductService {
         Motherboard: true,
         CPUCooler: true,
         PowerSupply: true,
-        Powerhouse: true
-      }
+        Powerhouse: true,
+      },
     });
     return Object.fromEntries(
-      Object.entries(product).filter(([key, value]) => value !== null)
+      Object.entries(product).filter(([key, value]) => value !== null),
     );
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return this.db.product.update({
+  async update(id: number, updateProductDto: UpdateProductDto) {
+    const product = await this.db.product.update({
       where: { id: id },
       data: {
         name: updateProductDto.name,
@@ -185,11 +203,18 @@ export class ProductService {
         CPUCooler: updateProductDto.CPUCooler ? { update: updateProductDto.CPUCooler } : undefined,
         PowerSupply: updateProductDto.PowerSupply ? { update: updateProductDto.PowerSupply } : undefined,
         Powerhouse: updateProductDto.Powerhouse ? { update: updateProductDto.Powerhouse } : undefined,
-      }
-    })
+      },
+    });
+
+    return Object.fromEntries(
+      Object.entries(product).filter(([key, value]) => value !== null),
+    );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: number) {
+    const deletedProduct = await this.db.product.delete({
+      where: { id: id },
+    });
+    return deletedProduct;
   }
 }

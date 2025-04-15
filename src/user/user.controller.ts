@@ -3,9 +3,9 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { Roles } from 'src/auth/decorators/role.decorator';
-import { Role } from 'src/auth/role.enum';
-import { Public } from 'src/auth/decorators/public.decorator';
+import { Roles } from '../auth/decorators/role.decorator';
+import { Role } from '../auth/role.enum';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('user')
 @ApiBearerAuth()

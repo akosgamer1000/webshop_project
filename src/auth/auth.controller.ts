@@ -3,10 +3,9 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { ApiBearerAuth, ApiParam, ApiProperty } from '@nestjs/swagger';
 import { Public } from './decorators/public.decorator';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import { ChangePasswordDto } from './dto/changePassword.dto';
-import { update } from 'lodash';
-import { UpdateUserDto } from 'src/user/dto/update-user.dto';
+import { UpdateUserDto } from '../user/dto/update-user.dto';
 import { DeleteProfile } from './dto/deleteprofile.dto';
 
 
@@ -60,10 +59,6 @@ export class AuthController {
     else {
       throw new BadRequestException('one of the fields should not be empty')
     }
-
-
-
-
   }
 
   /**
@@ -98,7 +93,6 @@ export class AuthController {
     try {
       return await this.authService.remove(req.user.id, password);
     } catch (error) {
-      console.log('asd')
       throw new UnauthorizedException('Invalid credentials');
     }
   }
