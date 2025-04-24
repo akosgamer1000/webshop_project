@@ -40,7 +40,23 @@ export class CreateProductDto {
     example: 100
   })
   price: number;
-  couantity: number;
+  @IsDefined({
+    message: "quantity field must be filled!"
+  })
+  @IsNumber()
+  @ApiProperty({
+    description: 'quantity of the product',
+    example: 100
+  })
+  quantity: number;
+  @IsDefined({
+    message: "imgSrc field must be filled!"
+  })
+  @IsString()
+  @ApiProperty({
+    description: 'Image source of the product',
+    example: 'https://example.com/image.jpg'
+  })
   imgSrc: string
 
 

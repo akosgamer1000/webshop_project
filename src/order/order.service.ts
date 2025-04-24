@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderItem } from '@prisma/client';
@@ -55,7 +55,7 @@ export class OrderService {
     } else {
       return this.db.order.create({
         data: {
-          email : createOrderDto.email,
+          email: createOrderDto.email,
           address: createOrderDto.address,
           status: "Pending",
           products: {
@@ -73,12 +73,16 @@ export class OrderService {
   }
 
 
-  findAll() {
-    return this.db.order.findMany();
+  async findAll() {
+    const orders = await this.db.order.findMany();
+    if (!orders) {
+      return new NotFoundException('Order not found');
+    }
+    return orders;
   }
 
-  findOne(id: number) {
-    return this.db.order.findUnique({
+  async findOne(id: number) {
+    const order = await this.db.order.findUnique({
       where: {
         id: id
       },
@@ -86,100 +90,41 @@ export class OrderService {
         products: true
       }
     });
+
+    if (!order) {
+      return new NotFoundException('Order not found');
+    }
+    return order;
   }
 
-  
 
-  async updateItemInOrder(id: number, updateOrderDto: UpdateOrderDto) {
-    if(updateOrderDto.products) {
-      return Promise.all(updateOrderDto.products.map(async (product) => {
-        if (await this.db.orderItem.count({
-          where: {
-            productId: product.productId,
-            orderId: id
-          }
-        }) === 0) {
-          console.log("Adding new product to order");
-          return await this.db.order.update({
-            where: { id: id },
-            data: {
-              products: {
-                create: {
-                  productId: product.productId,
-                  quantity: product.quantity
-                }
-              }
-            },
-            include: {
-              products: true
-            }
-          });
-        }
-        else {
-          console.log("updating product");
-          const item = await this.db.orderItem.findFirst({
-            where: {
-              productId: product.productId,
-              orderId: id
-            }
-          });
-          return await this.db.order.update({
-            where: { id: id },
-            data: {
-              products: {
-                update: {
-                  where: { id: item.id },
-                  data: {
-                    quantity: product.quantity
-                  }
-                }
-              }
-            },
-            include: {
-              products: true
-            }
-          });
-        }
-      }));
-    } else {
-      return await this.db.order.update({
-        where: { id },
-        data: {
-          status: updateOrderDto.status
-        },
-        include: {
-          products: true
-        }
-      });
-    }
-  } 
-  async removeItemFromOrder(orderId: number, productId: number) {
-    const orderItem = await this.db.orderItem.findFirst({
-      where: {
-        orderId: orderId,
-        productId: productId
-      }
-    })
-    console.log(orderItem)
-    return this.db.order.update({
-      where: { id: orderId },
+
+  async update(id: number, updateOrderDto: UpdateOrderDto) {
+
+    const order = await this.db.order.update({
+      where: { id },
       data: {
-        products: {
-          delete: {
-            id: orderItem.id
-          }
-        }
+        status: updateOrderDto.status
       },
       include: {
         products: true
       }
-    })
+    });
+    if (!order) {
+      return new NotFoundException('Order not found');
+    }
+
+    return order;
   }
 
-  remove(id: number) {
-    return this.db.order.delete({
+  async remove(id: number) {
+    const order = await this.db.order.delete({
       where: { id },
-
     })
+
+    if (!order) {
+      return new NotFoundException('Order not found');
+    }
+    return order;
   }
 }

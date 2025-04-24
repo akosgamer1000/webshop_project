@@ -8,7 +8,7 @@ export class Product {
     name: string;
     type: Type;
     price: number;
-    couantity: number;
+    quantity: number;
     
 
     Processor?: Processor

@@ -31,7 +31,7 @@ async function main() {
         manufacturer: "Intel",
         type: "PROCESSOR",
         price: 499.99,
-        couantity: 10,
+        quantity: 10,
         imgSrc: "",
         Processor: {
             create: {
@@ -54,7 +54,7 @@ const processorProduct1 = await prisma.product.create({
         manufacturer: "Intel",
         type: "PROCESSOR",
         price: 399.99,
-        couantity: 10,
+        quantity: 10,
         imgSrc: "",
         Processor: {
           create: {
@@ -77,7 +77,7 @@ const processorProduct2 = await prisma.product.create({
         manufacturer: "AMD",
         type: "PROCESSOR",
         price: 549.99,
-        couantity: 10,
+        quantity: 10,
         imgSrc: "",
         Processor: {
           create: {
@@ -100,7 +100,7 @@ const processorProduct3 = await prisma.product.create({
         manufacturer: "AMD",
         type: "PROCESSOR",
         price: 449.99,
-        couantity: 10,
+        quantity: 10,
         imgSrc: "",
         Processor: {
           create: {
@@ -124,7 +124,7 @@ const memoryProduct = await prisma.product.create({
         manufacturer: "Corsair",
         type: "MEMORY",
         price: 129.99,
-        couantity: 10,
+        quantity: 10,
         imgSrc: "",
         Memory: {
             create: {
@@ -144,7 +144,7 @@ const hardDriveProduct = await prisma.product.create({
         manufacturer: "Samsung",
         type: "HARDDRIVE",
         price: 199.99,
-        couantity: 10,
+        quantity: 10,
         imgSrc: "",
         HardDrive: {
             create: {
@@ -166,7 +166,7 @@ const videoCardProduct = await prisma.product.create({
         manufacturer: "NVIDIA",
         type: "VIDEOCARD",
         price: 699.99,
-        couantity: 10,
+        quantity: 10,
         imgSrc: "",
         VideoCard: {
             create: {
@@ -192,7 +192,7 @@ const motherboardProduct = await prisma.product.create({
         manufacturer: "ASUS",
         type: "MOTHERBOARD",
         price: 299.99,
-        couantity: 10,
+        quantity: 10,
         imgSrc: "",
         Motherboard: {
             create: {
@@ -221,7 +221,7 @@ const cpuCoolerProduct = await prisma.product.create({
         manufacturer: "Noctua",
         type: "CPUCOOLER",
         price: 89.99,
-        couantity: 10,
+        quantity: 10,
         imgSrc: "",
         CPUCooler: {
             create: {
@@ -240,7 +240,7 @@ const powerSupplyProduct = await prisma.product.create({
         manufacturer: "Corsair",
         type: "POWERSUPPLY",
         price: 124.99,
-        couantity: 10,
+        quantity: 10,
         imgSrc: "",
         PowerSupply: {
             create: {
@@ -259,7 +259,7 @@ const powerhouseProduct = await prisma.product.create({
         manufacturer: "NZXT",
         type: "POWERHOUSE",
         price: 79.99,
-        couantity: 10,
+        quantity: 10,
         imgSrc: "",
         Powerhouse: {
             create: {

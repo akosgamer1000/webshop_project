@@ -21,10 +21,23 @@ export class AuthService {
         return await argon2.verify(user.password, password);
     }
 
+    async getOrders(userId: number) {
+        const user = await this.db.user.findUnique({
+            where: { id: userId },
+            include: { orders: {
+                include: {
+                    products: true,
+                }
+            } }
+        });
+        return user.orders;
+    }
+
     async remove(id: number, password: DeleteProfile) {
         const user = await this.db.user.findUnique({
             where: { id }
         });
+        delete user.password
 
         if (!await this.verifyPassword(user.id, password.password)) {
             throw new UnauthorizedException('Invalid password');
