@@ -30,9 +30,11 @@ model Order {
 }
 
 enum Status {
+  Cancelled
   Pending
   InProgress
   Delivered
+ 
 }
 
 model OrderItem {
