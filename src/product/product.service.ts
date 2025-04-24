@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '../prisma.service';
@@ -17,7 +17,7 @@ export class ProductService {
         price: createProductDto.price,
         imgSrc: createProductDto.imgSrc || imagePath,
         manufacturer: createProductDto.manufacturer,
-        couantity: createProductDto.couantity, // This should be `quantity` instead
+        quantity: createProductDto.quantity, // This should be `quantity` instead
         Processor: createProductDto.Processor ? { create: createProductDto.Processor } : undefined,
         Memory: createProductDto.Memory ? { create: createProductDto.Memory } : undefined,
         HardDrive: createProductDto.HardDrive ? { create: createProductDto.HardDrive } : undefined,
@@ -132,7 +132,7 @@ export class ProductService {
     );
   }
 
-  async findAll(req) {
+  async findAll() {
     const products = await this.db.product.findMany({
       include: {
         Processor: true,
@@ -180,6 +180,9 @@ export class ProductService {
         Powerhouse: true,
       },
     });
+    if (!product) {
+      return new NotFoundException(`Product with id ${id} not found`);
+    }
     return Object.fromEntries(
       Object.entries(product).filter(([key, value]) => value !== null),
     );
@@ -192,7 +195,7 @@ export class ProductService {
         name: updateProductDto.name,
         type: updateProductDto.type,
         price: updateProductDto.price,
-        couantity: updateProductDto.couantity,
+        quantity: updateProductDto.quantity,
         imgSrc: updateProductDto.imgSrc,
         manufacturer: updateProductDto.manufacturer,
         Processor: updateProductDto.Processor ? { update: updateProductDto.Processor } : undefined,
@@ -205,6 +208,9 @@ export class ProductService {
         Powerhouse: updateProductDto.Powerhouse ? { update: updateProductDto.Powerhouse } : undefined,
       },
     });
+    if (!product) {
+      return new NotFoundException(`Product with id ${id} not found`);
+    }
 
     return Object.fromEntries(
       Object.entries(product).filter(([key, value]) => value !== null),
@@ -215,6 +221,9 @@ export class ProductService {
     const deletedProduct = await this.db.product.delete({
       where: { id: id },
     });
+    if (!deletedProduct) {
+      return new NotFoundException(`Product with id ${id} not found`);
+    }
     return deletedProduct;
   }
 }

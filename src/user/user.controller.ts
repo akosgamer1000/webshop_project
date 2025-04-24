@@ -22,7 +22,7 @@ export class UserController {
    */
   @Public()
   @Post()
-  @ApiResponse({ status: 200, description: 'The created user'})
+  @ApiResponse({ status: 201, description: 'The created user'})
   @ApiBadRequestResponse({ description: 'The supplied data was invalid'})
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);

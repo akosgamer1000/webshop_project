@@ -52,7 +52,7 @@ model Product {
   manufacturer String
   type         Type
   price        Float
-  couantity    Int
+  quantity    Int
   imgSrc       String
 
   Processor   Processor?

@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, UnauthorizedException, Request, Patch, Delete, Param, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { ApiBearerAuth, ApiParam, ApiProperty } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiParam, ApiProperty, ApiResponse } from '@nestjs/swagger';
 import { Public } from './decorators/public.decorator';
 import { UserService } from '../user/user.service';
 import { ChangePasswordDto } from './dto/changePassword.dto';
@@ -23,6 +23,10 @@ export class AuthController {
   @Public()
   @Post('login')
   @ApiParam({ name: 'loginDto', type: LoginDto })
+  @ApiResponse({ status: 201, description: 'Returns the access token of the user' })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  @ApiBadRequestResponse({ description: 'The supplied data is invalid' })
+
   async login(@Body() loginDto: LoginDto) {
     try {
       return await this.authService.login(loginDto);
@@ -38,9 +42,22 @@ export class AuthController {
    */
 
   @Get('profile')
+  @ApiResponse({ status: 201, description: 'Returns the user' })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
   getProfile(@Request() req) {
     return req.user;
   }
+
+  /**
+   * Returns the orders of the user that is logged in
+   * 
+   * @returns JSON response
+   */
+  @Get('profile/orders')
+  getOrders(@Request() req) {
+    return this.authService.getOrders(req.user.id);
+  }
+
 
   /**
    * Updates the profile of the user that is logged in
@@ -49,6 +66,9 @@ export class AuthController {
    */
   @Patch('profile')
   @ApiParam({ name: 'updateUserDto', type: UpdateUserDto })
+  @ApiResponse({ status: 200, description: 'Returns the access token of the updated user' })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  @ApiBadRequestResponse({ description: 'The supplied data is invalid' })
   async patchProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
     if (updateUserDto) {
       delete updateUserDto.password
@@ -62,6 +82,7 @@ export class AuthController {
   }
 
   /**
+   * Changes the password of the user that is logged in
    * 
    * @param req 
    * @param oldPasword 
@@ -71,8 +92,10 @@ export class AuthController {
 
   @ApiParam({ name: 'oldPassword', type: String, example: "Asd1234." })
   @ApiParam({ name: 'newPassword', type: String, example: "Dsa4321." })
-  @ApiProperty({ name: 'oldPassword', type: String, example: "Asd1234." })
-  @ApiProperty({ name: 'newPassword', type: String, example: "Dsa4321." })
+
+  @ApiResponse({ status: 200, description: 'Returns the access token of the updated user' })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  @ApiBadRequestResponse({ description: 'The supplied data is invalid' })
   @Patch('changePassword')
   async changePassword(@Request() req, @Body() changePasswordDto: ChangePasswordDto) {
     try {
@@ -82,12 +105,19 @@ export class AuthController {
     }
   }
 
+
+
   /**
    * Deletes the profile of the user that is logged in
    * 
+   * @param req The request object
+   * @param password The password of the user
    * @returns JSON response
    */
-
+  @ApiParam({ name: 'password', type: String, example: "Asd1234." })
+  @ApiResponse({ status: 200, description: 'Returns the access token of the updated user' })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  @ApiBadRequestResponse({ description: 'The supplied data is invalid' })
   @Delete('profile')
   async deleteProfile(@Request() req, @Body() password: DeleteProfile) {
     try {
