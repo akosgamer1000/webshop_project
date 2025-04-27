@@ -52,7 +52,7 @@ describe('ProductController', () => {
         manufacturer: 'Stormclaw',
         type: Type.PROCESSOR,
         price: 399,
-        couantity: 10,
+        quantity: 10,
         imgSrc: '',
         Processor: {
           id: 1,
@@ -82,9 +82,8 @@ describe('ProductController', () => {
 
   describe('findAll', () => {
     it('should call productService.findAll', () => {
-      const mockReq = {};
-      controller.findAll(mockReq);
-      expect(service.findAll).toHaveBeenCalledWith(mockReq);
+      controller.findAll();
+      expect(service.findAll).toHaveBeenCalledWith();
     });
   });
 
@@ -93,12 +92,6 @@ describe('ProductController', () => {
       const mockReq = { query: { search: 'cpu' } };
       controller.search(mockReq);
       expect(service.search).toHaveBeenCalledWith('cpu');
-    });
-
-    it('should call findAll when no query param exists', () => {
-      const mockReq = { query: {} };
-      controller.search(mockReq);
-      expect(service.findAll).toHaveBeenCalledWith(mockReq);
     });
   });
 

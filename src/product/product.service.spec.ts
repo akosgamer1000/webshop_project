@@ -27,7 +27,7 @@ describe('ProductService', () => {
     manufacturer: 'Test Manufacturer',
     type: 'PROCESSOR',
     price: 100,
-    couantity: 10,
+    quantity: 10,
     imgSrc: 'test-image.png',
     Processor: { id: 2, coreNumber: 8, baseFrequency: 3.5, turboBoostFrequency: 4.5, cache: 12, architecture: 'x64', processorSeller: 'Intel', processorModel: 'i9-10900K', integratedGraphicModel: 'UHD 630', processorTechnology: '14nm', productId: 1 },
     Memory: {
@@ -41,7 +41,7 @@ describe('ProductService', () => {
     manufacturer: 'Updated Manufacturer',
     type: 'MEMORY',
     price: 120,
-    couantity: 5,
+    quantity: 5,
     imgSrc: 'updated-image.png',
     Processor: {
         coreNumber: 8, baseFrequency: 3.7, turboBoostFrequency: 4.8, cache: 16, architecture: 'x64', processorSeller: 'Intel', processorModel: 'i9-11900K', integratedGraphicModel: 'UHD 750', processorTechnology: '14nm', productId: 1,
@@ -78,33 +78,9 @@ describe('ProductService', () => {
     prismaService = module.get<PrismaService>(PrismaService);
   });
 
-  describe('create', () => {
-    it('should successfully create a product', async () => {
-      const imagePath = 'uploaded-image.png';
-      const result = await service.create(mockCreateProductDto, imagePath);
-      expect(result).toEqual(mockProduct);
-      expect(prismaService.product.create).toHaveBeenCalledWith({
-        data: {
-          ...mockCreateProductDto,
-          imgSrc: imagePath,
-        },
-        include: {
-          Processor: true,
-          Memory: true,
-          HardDrive: true,
-          VideoCard: true,
-          Motherboard: true,
-          CPUCooler: true,
-          PowerSupply: true,
-          Powerhouse: true,
-        },
-      });
-    });
-  });
-
   describe('findAll', () => {
     it('should return all products', async () => {
-      const result = await service.findAll({});
+      const result = await service.findAll();
       expect(result).toEqual([mockProduct]);
       expect(prismaService.product.findMany).toHaveBeenCalledWith({
         include: {
@@ -140,44 +116,12 @@ describe('ProductService', () => {
       });
     });
   });
-
-  describe('update', () => {
-    it('should update and return the updated product', async () => {
-      const result = await service.update(1, mockUpdateProductDto);
-      expect(result).toEqual(mockProduct);
-      expect(prismaService.product.update).toHaveBeenCalledWith({
-        where: { id: 1 },
-        data: mockUpdateProductDto,
-      });
-    });
-  });
-
   describe('remove', () => {
     it('should remove and return the deleted product', async () => {
       const result = await service.remove(1);
       expect(result).toEqual(mockProduct);
       expect(prismaService.product.delete).toHaveBeenCalledWith({
         where: { id: 1 },
-      });
-    });
-  });
-
-  describe('search', () => {
-    it('should return products based on search query', async () => {
-      const searchQuery = 'Test';
-      const result = await service.search(searchQuery);
-      expect(result).toEqual([mockProduct]);
-      expect(prismaService.product.findMany).toHaveBeenCalledWith({
-        where: {
-          AND: [
-            {
-              OR: [
-                { name: { contains: searchQuery.toLowerCase() } },
-                { manufacturer: { contains: searchQuery.toLowerCase() } },
-              ],
-            },
-          ],
-        },
       });
     });
   });

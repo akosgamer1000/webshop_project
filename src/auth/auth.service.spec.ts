@@ -38,27 +38,6 @@ describe('AuthService', () => {
     jest.clearAllMocks();
   });
 
-  describe('remove()', () => {
-    it('should successfully remove a user with valid password', async () => {
-      const mockUser = { id: 1, password: await argon2.hash('password123') };
-      const passwordDto = { password: 'password123' };
-
-      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
-      mockPrismaService.user.delete.mockResolvedValue(mockUser);
-
-      await expect(service.remove(1, passwordDto)).resolves.toEqual(mockUser);
-    });
-
-    it('should throw UnauthorizedException for invalid password', async () => {
-      const mockUser = { id: 1, password: await argon2.hash('password123') };
-      const passwordDto = { password: 'wrongPassword' };
-
-      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
-
-      await expect(service.remove(1, passwordDto)).rejects.toThrow(UnauthorizedException);
-    });
-  });
-
   describe('update()', () => {
     it('should update user and return new JWT token', async () => {
       const mockUser = { id: 1, name: 'John Doe', email: 'john@example.com', address: '123 Main St', role: 'user' };

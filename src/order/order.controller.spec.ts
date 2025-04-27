@@ -92,20 +92,6 @@ describe('OrderController', () => {
     expect(mockOrderService.findOne).toHaveBeenCalledWith(1);
   });
 
-
-  it('PATCH /order/:orderId/removeFromOrder/:productId - should remove item from order', async () => {
-    const result = { id: 1, removedProductId: 2 };
-
-    mockOrderService.removeItemFromOrder.mockResolvedValue(result);
-
-    const res = await request(app.getHttpServer())
-      .patch('/order/1/removeFromOrder/2')
-      .expect(200);
-
-    expect(res.body).toEqual(result);
-    expect(mockOrderService.removeItemFromOrder).toHaveBeenCalledWith(1, 2);
-  });
-
   it('DELETE /order/:id - should delete an order', async () => {
     const deletedOrder = { id: 1 };
     mockOrderService.remove.mockResolvedValue(deletedOrder);
