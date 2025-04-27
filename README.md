@@ -8,7 +8,7 @@ A rendszer kezeli a felhasználókat, a termékeket, a rendeléseket, és továb
 ## Követelmények
 - Node.js (>=18)
 - NPM vagy Yarn
-- PostgreSQL adatbázis
+- mySQL adatbázis
 
 ## Telepítés
 ```bash
@@ -44,15 +44,12 @@ A Swagger dokumentáció tartalmazza:
 - Végpontok URL-jei és HTTP metódusai (GET, POST, PATCH, DELETE)
 - Kért és válaszként kapott adatok szerkezete (DTO-k)
 - Példa kérések és válaszok
-- Hitelesítési igények (Bearer token megadás)
 
 Így közvetlenül a böngészőből kipróbálhatók az API végpontok!
 
 ## Környezeti változók (.env példa)
 ```env
-DATABASE_URL=postgresql://user:password@localhost:5432/webshop
-JWT_SECRET=valamiTitkosKulcs
-JWT_EXPIRES_IN=3600s
+DATABASE_URL ="mysql://root:@localhost:3306/PcWebShop"
 ```
 
 ## Egyéb információk
