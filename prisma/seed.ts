@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-
+import * as argon2 from 'argon2';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -8,7 +8,7 @@ async function main() {
     data: {
       name: "John Doe",
       email: "john.doe@example.com",
-      password: "password123",
+      password: await argon2.hash("securepassword"),
       address: "sesam street 1",
       role: "ADMIN",
     },
@@ -18,7 +18,7 @@ async function main() {
     data: {
       name: "Jane Smith",
       email: "jane.smith@example.com",
-      password: "securepassword",
+      password: await argon2.hash("Verysecurepassword"),
       address: "sesam street 2",
       role: "USER",
     },

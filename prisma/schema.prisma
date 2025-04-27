@@ -172,14 +172,6 @@ model Powerhouse {
   Product         Product @relation(fields: [productId], references: [id])
 }
 
-model Size {
-  id        Int   @id @default(autoincrement())
-  width     Float
-  length    Float
-  height    Float
-  productId Int   @unique
-}
-
 enum Type {
   PROCESSOR
   MEMORY
@@ -190,3 +182,4 @@ enum Type {
   POWERSUPPLY
   POWERHOUSE
 }
+

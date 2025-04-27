@@ -47,6 +47,10 @@ A Swagger dokumentáció tartalmazza:
 
 Így közvetlenül a böngészőből kipróbálhatók az API végpontok!
 
+## Adatbázismodell-diagram
+![Adatbázismodell-diagram](Adatbázismodell-diagram.png)
+
+
 ## Környezeti változók (.env példa)
 ```env
 DATABASE_URL ="mysql://root:@localhost:3306/PcWebShop"
