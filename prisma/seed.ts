@@ -32,7 +32,7 @@ async function main() {
         type: "PROCESSOR",
         price: 499.99,
         quantity: 10,
-        imgSrc: "",
+        imgSrc: "intel_core_i9.png",
         Processor: {
             create: {
                 coreNumber: 8,
@@ -55,7 +55,7 @@ const processorProduct1 = await prisma.product.create({
         type: "PROCESSOR",
         price: 399.99,
         quantity: 10,
-        imgSrc: "",
+        imgSrc: "intel_core_i7.jpg",
         Processor: {
           create: {
             coreNumber: 8,
@@ -78,7 +78,7 @@ const processorProduct2 = await prisma.product.create({
         type: "PROCESSOR",
         price: 549.99,
         quantity: 10,
-        imgSrc: "",
+        imgSrc: "AMD Ryzen 9 5900X.jpg",
         Processor: {
           create: {
             coreNumber: 12,
@@ -101,7 +101,7 @@ const processorProduct3 = await prisma.product.create({
         type: "PROCESSOR",
         price: 449.99,
         quantity: 10,
-        imgSrc: "",
+        imgSrc: "AMD Ryzen 7 5800X.webp",
         Processor: {
           create: {
             coreNumber: 8,
@@ -125,7 +125,7 @@ const memoryProduct = await prisma.product.create({
         type: "MEMORY",
         price: 129.99,
         quantity: 10,
-        imgSrc: "",
+        imgSrc: "Corsair Vengeance.jpg",
         Memory: {
             create: {
                 memoryCapacity: 16,
@@ -145,7 +145,7 @@ const hardDriveProduct = await prisma.product.create({
         type: "HARDDRIVE",
         price: 199.99,
         quantity: 10,
-        imgSrc: "",
+        imgSrc: "Samsung 970 EVO Plus.jpg",
         HardDrive: {
             create: {
                 capacity: 1,
@@ -167,7 +167,7 @@ const videoCardProduct = await prisma.product.create({
         type: "VIDEOCARD",
         price: 699.99,
         quantity: 10,
-        imgSrc: "",
+        imgSrc: "NVIDIA GeForce RTX 3080.jpg",
         VideoCard: {
             create: {
                 videoChipset: "GA102",
@@ -193,7 +193,7 @@ const motherboardProduct = await prisma.product.create({
         type: "MOTHERBOARD",
         price: 299.99,
         quantity: 10,
-        imgSrc: "",
+        imgSrc: "ASUS ROG Strix Z590-E.jpg",
         Motherboard: {
             create: {
                 cpuSocket: "LGA1200",
@@ -222,7 +222,7 @@ const cpuCoolerProduct = await prisma.product.create({
         type: "CPUCOOLER",
         price: 89.99,
         quantity: 10,
-        imgSrc: "",
+        imgSrc: "Noctua NH-D15.jpg",
         CPUCooler: {
             create: {
                 fanSpeed: 1500,
@@ -241,7 +241,7 @@ const powerSupplyProduct = await prisma.product.create({
         type: "POWERSUPPLY",
         price: 124.99,
         quantity: 10,
-        imgSrc: "",
+        imgSrc: "Corsair RM750x.jpg",
         PowerSupply: {
             create: {
                 performance: 750,
@@ -260,7 +260,7 @@ const powerhouseProduct = await prisma.product.create({
         type: "POWERHOUSE",
         price: 79.99,
         quantity: 10,
-        imgSrc: "",
+        imgSrc: "NZXT H510.jpg",
         Powerhouse: {
             create: {
                 motherboardType: "ATX",

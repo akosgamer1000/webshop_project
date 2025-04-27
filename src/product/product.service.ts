@@ -17,7 +17,7 @@ export class ProductService {
         price: createProductDto.price,
         imgSrc: createProductDto.imgSrc || imagePath,
         manufacturer: createProductDto.manufacturer,
-        quantity: createProductDto.quantity, // This should be `quantity` instead
+        quantity: createProductDto.quantity, 
         Processor: createProductDto.Processor ? { create: createProductDto.Processor } : undefined,
         Memory: createProductDto.Memory ? { create: createProductDto.Memory } : undefined,
         HardDrive: createProductDto.HardDrive ? { create: createProductDto.HardDrive } : undefined,
